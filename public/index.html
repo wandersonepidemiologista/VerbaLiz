@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<!--
+  VerbaLiz
+  Quem não fala também tem o que dizer.
+  Required Notice: Copyright (c) 2026 Wanderson Kleber de Oliveira
+
+  Codigo: PolyForm Noncommercial License 1.0.0
+  https://polyformproject.org/licenses/noncommercial/1.0.0
+
+  Conteudo (desenhos SVG da funcao icone(), vocabulario padrao em CARDS e TELAS):
+  Creative Commons CC BY-NC-SA 4.0
+  https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+  Codigo disponivel para uso nao comercial. Ver LICENSE e LICENSE-CONTEUDO.md.
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0B1030">
+<meta name="robots" content="noindex, nofollow">
+<title>VerbaLiz</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone-192.png">
+<style>
+  /* ---------- tema: todas as cores em variaveis ---------- */
+  :root{
+    /* paleta adulto (abertura, configuracao, Sobre) */
+    --creme:#FAF1F1;
+    --lilas-claro:#B6BDDE;
+    --lilas:#C9A0D8;
+    --rosa:#D79BBD;
+    --rosa-forte:#BE7A9E;
+    --turquesa:#71B1B0;
+    --azul-petroleo:#44A2AE;
+    --dourado:#E1B368;
+    --roxo:#675482;
+    --texto-adulto:#4A3A6B;
+
+    /* paleta crianca (telas que a Liz toca): saturada, fundo escuro liso */
+    --fundo-crianca:#0B1030;
+    --superficie-crianca:#161C45;
+    --texto-crianca:#FFFFFF;
+    --c-rosa:#FF4FA3;
+    --c-turquesa:#2FD6C9;
+    --c-lilas:#B57BFF;
+    --c-dourado:#FFC94D;
+    --c-azul:#3BA9FF;
+    --c-laranja:#FF7A1A;
+    --placa-picto:#FAF1F1;
+
+    /* sim e nao: padrao semantico, trocavel para a paleta */
+    --c-sim:#2BD96B;
+    --c-nao:#FF3B3B;
+
+    /* geometria, ajustada pela configuracao */
+    --borda-card:12px;
+    --raio-card:32px;
+    --vao-cards:6vw;
+    --altura-pergunta:20%;
+  }
+  body[data-simnao="paleta"]{ --c-sim:var(--c-turquesa); --c-nao:var(--c-rosa); }
+
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{
+    margin:0; padding:0; height:100%; width:100%;
+    background:var(--fundo-crianca); color:var(--texto-crianca);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    overflow:hidden; overscroll-behavior:none;
+    user-select:none; -webkit-user-select:none; touch-action:manipulation;
+  }
+
+  /* ---------- telas da crianca ---------- */
+  #app{position:fixed; inset:0; display:flex; flex-direction:column; background:var(--fundo-crianca);}
+
+  #faixa{
+    flex:0 0 auto; height:30px; display:flex; align-items:center; justify-content:center;
+    font-size:13px; color:var(--lilas-claro); opacity:.7;
+  }
+  #faixa.oculta{display:none;}
+
+  /* terceiro card: o objeto da pergunta, acima dos dois alvos */
+  #pergunta{
+    flex:0 0 var(--altura-pergunta); margin:16px 16px 0;
+    display:flex; align-items:center; justify-content:center; gap:3vw;
+    background:var(--superficie-crianca); border-radius:var(--raio-card);
+    color:var(--texto-crianca); overflow:hidden;
+  }
+  #pergunta.oculta{display:none;}
+  #pergunta.com-home{margin-left:88px;}
+  #pergunta .obj{height:78%; display:flex; align-items:center;}
+  #pergunta .obj svg, #pergunta .obj img{height:100%; width:auto;}
+  #pergunta .obj .placa{height:100%;}
+
+  /* placa clara para pictogramas ARASAAC: preserva o contorno preto original
+     e funciona como objeto unico de alto contraste sobre o fundo escuro */
+  .placa{
+    height:100%; aspect-ratio:1/1; background:var(--placa-picto);
+    border-radius:18%; padding:7%; display:flex; align-items:center; justify-content:center;
+  }
+  .placa img{width:100%; height:100%; object-fit:contain; display:block;}
+  #pergunta .txt{font-size:clamp(24px,5vh,56px); font-weight:700; line-height:1.1;}
+
+  /* dois cards lado a lado, com vao central como zona morta */
+  #grade{
+    flex:1 1 auto; display:grid; padding:16px;
+    grid-template-columns:1fr 1fr; grid-template-rows:minmax(0,1fr);
+    column-gap:var(--vao-cards); row-gap:14px; min-height:0;
+  }
+  /* espaço reservado para as setas de página e o botão de voltar */
+  #grade.rodape{padding-bottom:98px;}
+  #grade.quatro{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    grid-template-rows:repeat(2,minmax(0,1fr));
+    column-gap:calc(var(--vao-cards)/2);
+  }
+
+  .card{
+    position:relative; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:2%;
+    min-height:0; min-width:0;
+    background:var(--fundo-crianca); border:var(--borda-card) solid var(--lilas-claro);
+    border-radius:var(--raio-card); overflow:hidden;
+    transition:opacity .4s ease, transform .12s ease;
+  }
+  .card.pressionado{transform:scale(.97);}
+  /* resposta a um toque: a escolha fica, o resto apaga */
+  .card.escolhido{transform:scale(1.02); box-shadow:0 0 0 6px rgba(255,255,255,.18);}
+  .card.apagado{opacity:.12;}
+  .card img.foto{width:86%; object-fit:contain;}
+  .card .rotulo{
+    font-size:42px; font-weight:700; letter-spacing:.5px; color:var(--texto-crianca);
+    text-align:center; padding:0 8px; line-height:1.1;
+  }
+  .card.sem-rotulo .rotulo{display:none;}
+  .card.preenchido .rotulo{color:var(--fundo-crianca);}
+
+  #voltar{
+    position:fixed; right:14px; bottom:14px; width:80px; height:80px;
+    border-radius:50%; background:var(--superficie-crianca); border:4px solid var(--lilas-claro);
+    color:var(--lilas-claro);
+    display:flex; align-items:center; justify-content:center; z-index:30;
+  }
+  #voltar.oculto{display:none;}
+  #voltar svg{width:40px; height:40px;}
+
+  #canto-config{position:fixed; top:0; right:0; width:90px; height:90px; z-index:40;}
+
+  /* controles pequenos: home, voltar de nível, páginas */
+  #home{
+    position:fixed; overflow:hidden; top:12px; left:12px; width:62px; height:62px; border-radius:16px;
+    background:var(--superficie-crianca); border:3px solid var(--lilas-claro); color:var(--lilas-claro);
+    display:flex; align-items:center; justify-content:center; z-index:35;
+    transition:transform .15s ease, background .15s ease;
+  }
+  #home.oculto{display:none;}
+  #home.segurando{transform:scale(1.08); background:var(--roxo);}
+  #home svg{width:32px; height:32px; position:relative; z-index:1;}
+  #home .progresso{
+    position:absolute; left:0; bottom:0; width:0; height:100%;
+    background:var(--roxo); border-radius:13px; opacity:.85; z-index:0;
+  }
+  #home, #paginas .nav{touch-action:none;}
+
+  #paginas{
+    position:fixed; left:50%; bottom:10px; transform:translateX(-50%);
+    display:flex; align-items:center; gap:18px; z-index:35;
+  }
+  #paginas.oculto{display:none;}
+  #paginas .nav{
+    width:64px; height:52px; border-radius:14px;
+    background:var(--superficie-crianca); border:3px solid var(--lilas-claro); color:var(--lilas-claro);
+    display:flex; align-items:center; justify-content:center;
+  }
+  #paginas .nav svg{width:26px; height:26px;}
+  #paginas .marca-pagina{font-size:15px; color:var(--lilas-claro); opacity:.85; min-width:62px; text-align:center;}
+
+  #retorno{
+    position:fixed; inset:0; background:var(--fundo-crianca); z-index:50;
+    display:none; flex-direction:column; align-items:center; justify-content:center; gap:24px;
+  }
+  #retorno.ativo{display:flex;}
+  #retorno svg{width:46vmin; height:46vmin;}
+  #retorno .texto{font-size:clamp(28px,6vmin,64px); font-weight:700;}
+
+  /* aviso de orientacao, caso o bloqueio de tela nao funcione */
+  #girar{
+    position:fixed; inset:0; z-index:90; background:var(--fundo-crianca);
+    display:none; align-items:center; justify-content:center; text-align:center;
+    color:var(--lilas-claro); font-size:22px; padding:30px;
+  }
+  @media (orientation:portrait){ #girar{display:flex;} }
+
+  /* ---------- telas do adulto ---------- */
+  .adulto{background:var(--creme); color:var(--texto-adulto);}
+
+  #abertura{
+    position:fixed; inset:0; z-index:150;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:18px; padding:32px; text-align:center;
+  }
+  #abertura.oculta{display:none;}
+  #abertura h1{font-size:clamp(40px,8vw,84px); margin:0; color:var(--roxo); letter-spacing:.5px;}
+  #abertura .slogan{font-size:clamp(18px,2.6vw,26px); margin:0; max-width:34ch;}
+  #abertura .apoio{font-size:15px; margin:0; color:var(--roxo); opacity:.8;}
+  #abertura button{
+    margin-top:14px; font-size:24px; font-weight:700; padding:18px 56px; border-radius:18px;
+    background:var(--azul-petroleo); color:#fff; border:none; font-family:inherit;
+  }
+  #abertura .dica{font-size:13px; opacity:.75; margin-top:8px; max-width:48ch;}
+
+  #pranchas{
+    position:fixed; inset:0; z-index:140;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:22px; padding:30px; text-align:center;
+  }
+  #pranchas.oculta{display:none;}
+  #pranchas h1{font-size:clamp(26px,4vw,40px); margin:0; color:var(--roxo);}
+  .escolha-prancha{display:flex; gap:22px; flex-wrap:wrap; justify-content:center;}
+  .escolha-prancha button{
+    width:330px; max-width:80vw; padding:22px; border-radius:18px; font-family:inherit;
+    background:#fff; border:3px solid var(--lilas-claro); color:var(--texto-adulto);
+    display:flex; flex-direction:column; gap:9px; text-align:left;
+  }
+  .escolha-prancha button strong{font-size:22px; color:var(--roxo);}
+  .escolha-prancha button span{font-size:14px; line-height:1.45;}
+  #pranchas .dica{font-size:13px; opacity:.72; margin:0;}
+
+  #config{position:fixed; inset:0; z-index:100; display:none; flex-direction:column;}
+  #config.ativo{display:flex;}
+  #config header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 18px; border-bottom:2px solid var(--lilas-claro); flex:0 0 auto;
+  }
+  #config header h1{font-size:19px; margin:0; font-weight:700; color:var(--roxo);}
+  #config .corpo{flex:1 1 auto; overflow-y:auto; padding:18px; padding-bottom:60px;}
+  #config h2{
+    font-size:14px; font-weight:700; color:var(--roxo); margin:26px 0 10px;
+    border-bottom:1px solid var(--lilas-claro); padding-bottom:6px;
+  }
+  #config h2:first-child{margin-top:0;}
+  .linha{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:14px; padding:9px 0; font-size:15px; border-bottom:1px solid #EADDE3;
+  }
+  .linha .ajuda{display:block; font-size:12px; opacity:.72; margin-top:3px; max-width:46ch;}
+  .linha input[type=range]{width:170px; accent-color:var(--azul-petroleo);}
+  select,input[type=number],button.btn{
+    background:#fff; color:var(--texto-adulto); border:1px solid var(--lilas-claro); border-radius:8px;
+    padding:8px 11px; font-size:14px; font-family:inherit;
+  }
+  button.btn{cursor:pointer;}
+  button.btn:active{background:#F3E6EC;}
+  button.btn.primario{background:var(--azul-petroleo); border-color:var(--azul-petroleo); color:#fff;}
+  button.btn.alerta{background:var(--rosa-forte); border-color:var(--rosa-forte); color:#fff;}
+  .valor{min-width:66px; text-align:right; color:var(--roxo); font-variant-numeric:tabular-nums;}
+  .grade-midia{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:10px;}
+  .item-midia{
+    border:1px solid var(--lilas-claro); border-radius:10px; padding:11px; background:#fff;
+    display:flex; flex-direction:column; gap:9px;
+  }
+  .item-midia .topo{display:flex; align-items:center; gap:10px;}
+  .item-midia .topo .ic{width:34px; height:34px; flex:0 0 auto; border-radius:8px;
+    background:var(--fundo-crianca); padding:3px;}
+  .item-midia .topo .ic svg{width:100%; height:100%;}
+  .item-midia .topo .ic .placa{border-radius:6px; padding:2px;}
+  .item-midia .topo strong{font-size:15px;}
+  .item-midia .acoes{display:flex; flex-wrap:wrap; gap:7px;}
+  .item-midia .acoes button{font-size:12.5px; padding:6px 9px;}
+  .marca{font-size:11.5px; color:var(--azul-petroleo);}
+  .marca.vazio{opacity:.6; color:var(--texto-adulto);}
+
+  #aviso{
+    position:fixed; left:50%; bottom:26px; transform:translateX(-50%);
+    background:var(--roxo); color:#fff; padding:11px 18px; border-radius:10px;
+    font-size:14px; z-index:200; opacity:0; transition:opacity .25s; pointer-events:none;
+    max-width:86vw; text-align:center;
+  }
+  #aviso.ativo{opacity:1;}
+  @media (prefers-reduced-motion:reduce){*{transition:none !important;}}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div id="faixa" class="oculta"></div>
+  <div id="pergunta"></div>
+  <div id="grade"></div>
+</div>
+
+<div id="home" class="oculto" aria-label="Sair para a escolha de prancha">
+  <div class="progresso"></div>
+  <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 48 L50 20 L82 48"/><path d="M28 46v34h44V46"/>
+  </svg>
+</div>
+
+<div id="paginas" class="oculto"></div>
+
+<div id="voltar" class="oculto" aria-label="Voltar">
+  <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M62 22 L34 50 L62 78"/>
+  </svg>
+</div>
+
+<div id="canto-config"></div>
+<div id="retorno"></div>
+<div id="aviso"></div>
+<div id="girar">Gire o tablet para a posição deitada.</div>
+
+<div id="pranchas" class="adulto oculta">
+  <h1>Qual prancha?</h1>
+  <div class="escolha-prancha">
+    <button id="abrir-simnao">
+      <strong>Sim e Não</strong>
+      <span>Dois cards grandes, sem pergunta na tela. Você pergunta em voz alta e a Liz responde.</span>
+    </button>
+    <button id="abrir-menu">
+      <strong>Menu da Liz</strong>
+      <span>Quero, Sinto, Fazer, Chamar, com atalhos para mais, dor e fralda.</span>
+    </button>
+  </div>
+  <p class="dica">Segure 3 segundos no canto superior direito para abrir a configuração.</p>
+</div>
+
+<div id="abertura" class="adulto">
+  <h1>VerbaLiz</h1>
+  <p class="slogan">Quem não fala também tem o que dizer.</p>
+  <p class="apoio">O verbo na ponta do dedo.</p>
+  <button id="comecar">Começar</button>
+  <p class="dica">Toque do adulto. Liga tela cheia, trava na horizontal e libera o som.
+  Para abrir a configuração depois, segure 3 segundos no canto superior direito.</p>
+</div>
+
+<div id="config" class="adulto">
+  <header>
+    <h1>Configuração</h1>
+    <button class="btn primario" id="fechar-config">Voltar ao app</button>
+  </header>
+  <div class="corpo" id="config-corpo"></div>
+</div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   1. VOCABULÁRIO
+   Estrutura de telas e cards. Tudo em pares.
+   Para mudar vocabulário, mexa só aqui.
+   ============================================================ */
+
+const CARDS = {
+  /* --- menu principal da Liz --- */
+  quero:      {rotulo:"Quero",      fala:"Quero",             cor:"dourado",  abre:"quero",    icone:"mao",     arasaac:5441},
+  sinto:      {rotulo:"Sinto",      fala:"Sinto",             cor:"rosa",     abre:"sinto",    arasaac:11476},
+  fazer:      {rotulo:"Fazer",      fala:"Fazer",             cor:"turquesa", abre:"fazer",    arasaac:32751},
+  chamar:     {rotulo:"Chamar",     fala:"Chamar",            cor:"lilas",    abre:"chamar",   icone:"pessoas", arasaac:32669},
+
+  /* --- atalhos do menu principal, repetidos de propósito --- */
+  at_mais:    {rotulo:"Mais",       fala:"Quero mais",        cor:"azul",     mensagem:true,  arasaac:3220},
+  at_dor:     {rotulo:"Dor",        fala:"Estou com dor",     cor:"laranja",  abre:"dor",     arasaac:2367},
+  at_fralda:  {rotulo:"Fralda",     fala:"Quero trocar a fralda", cor:"laranja", mensagem:true, arasaac:29824},
+
+  /* --- Quero --- */
+  comer:      {rotulo:"Comer",      fala:"Quero comer",       cor:"dourado",  abre:"comer",    icone:"prato", arasaac:4611},
+  beber:      {rotulo:"Beber",      fala:"Quero beber",       cor:"azul",     abre:"beber",    icone:"copo", arasaac:4768},
+  mais:       {rotulo:"Mais",       fala:"Mais",              cor:"turquesa", abre:"mais",     arasaac:3220},
+  video:      {rotulo:"Vídeo",      fala:"Vídeo",             cor:"lilas",    abre:"video",    icone:"tela", arasaac:29123},
+
+  queijo:     {rotulo:"Queijo",     fala:"Quero queijo",      cor:"dourado",  mensagem:true,  arasaac:2541},
+  pao:        {rotulo:"Pão",        fala:"Quero pão",         cor:"laranja",  mensagem:true,  arasaac:2494},
+  uva:        {rotulo:"Uva",        fala:"Quero uva",         cor:"turquesa", mensagem:true,  arasaac:3247},
+  comida:     {rotulo:"Comida",     fala:"Quero comida",      cor:"rosa",     mensagem:true,  arasaac:4610},
+
+  agua:       {rotulo:"Água",       fala:"Quero água",        cor:"azul",     mensagem:true,  arasaac:32464},
+  suco:       {rotulo:"Suco",       fala:"Quero suco",        cor:"laranja",  mensagem:true,  arasaac:11461},
+  cafe:       {rotulo:"Café",       fala:"Quero café",        cor:"dourado",  mensagem:true,  arasaac:24479},
+  leitinho:   {rotulo:"Leitinho",   fala:"Quero leitinho",    cor:"turquesa", mensagem:true,  arasaac:4577},
+
+  quero_mais: {rotulo:"Quero mais", fala:"Quero mais",        cor:"turquesa", mensagem:true,  arasaac:3220},
+  nao_mais:   {rotulo:"Não quero mais", fala:"Não quero mais", cor:"rosa",    mensagem:true,  arasaac:6156},
+
+  trocar:     {rotulo:"Trocar",     fala:"Quero trocar o vídeo", cor:"lilas", mensagem:true,  icone:"trocar", arasaac:26730},
+  parar:      {rotulo:"Parar",      fala:"Quero parar",       cor:"rosa",     mensagem:true,  icone:"parar", arasaac:7196},
+  desenho:    {rotulo:"Desenho",    fala:"Quero ver desenho", cor:"dourado",  mensagem:true,  arasaac:8089},
+  musica:     {rotulo:"Música",     fala:"Quero música",      cor:"turquesa", mensagem:true,  arasaac:24791},
+
+  /* --- Sinto --- */
+  dor:        {rotulo:"Dor",        fala:"Estou com dor",     cor:"laranja",  abre:"dor",     arasaac:2367},
+  cansada:    {rotulo:"Cansada",    fala:"Estou cansada",     cor:"azul",     mensagem:true,  arasaac:35537},
+  irritada:   {rotulo:"Irritada",   fala:"Estou irritada",    cor:"rosa",     mensagem:true,  arasaac:35539},
+  feliz:      {rotulo:"Feliz",      fala:"Estou feliz",       cor:"dourado",  mensagem:true,  arasaac:9907},
+  sono:       {rotulo:"Com sono",   fala:"Estou com sono",    cor:"lilas",    mensagem:true,  arasaac:6479},
+  medo:       {rotulo:"Com medo",   fala:"Estou com medo",    cor:"turquesa", mensagem:true,  arasaac:10261},
+
+  cabeca:     {rotulo:"Cabeça",     fala:"Dói a cabeça",      cor:"laranja",  mensagem:true,  arasaac:28651},
+  barriga:    {rotulo:"Barriga",    fala:"Dói a barriga",     cor:"azul",     mensagem:true,  arasaac:28766},
+
+  /* --- Fazer --- */
+  sair:       {rotulo:"Sair",       fala:"Sair",              cor:"turquesa", abre:"sair",     arasaac:2806},
+  brincar:    {rotulo:"Brincar",    fala:"Brincar",           cor:"dourado",  abre:"brincar",  arasaac:9813},
+  cuidados:   {rotulo:"Cuidados",   fala:"Cuidados",          cor:"azul",     abre:"cuidados", arasaac:6058},
+  lugares:    {rotulo:"Lugares",    fala:"Lugares",           cor:"lilas",    abre:"lugares",  arasaac:6964},
+
+  rede:       {rotulo:"Rede",       fala:"Quero ficar na rede",   cor:"turquesa", mensagem:true, arasaac:24563},
+  bicicleta:  {rotulo:"Bicicleta",  fala:"Quero andar de bicicleta", cor:"rosa",  mensagem:true, arasaac:6935},
+  nadar:      {rotulo:"Nadar",      fala:"Quero nadar",       cor:"azul",     mensagem:true,  arasaac:6568},
+  mudar_lugar:{rotulo:"Sair daqui", fala:"Quero sair daqui",  cor:"laranja",  mensagem:true,  arasaac:2806},
+
+  brinquedo:  {rotulo:"Brinquedo",  fala:"Quero o brinquedo", cor:"dourado",  mensagem:true,  arasaac:9813},
+  pular:      {rotulo:"Pular",      fala:"Quero pular",       cor:"rosa",     mensagem:true,  arasaac:39052},
+  de_pe:      {rotulo:"Ficar em pé",fala:"Quero ficar em pé", cor:"turquesa", mensagem:true,  arasaac:26075},
+  balancar:   {rotulo:"Balançar",   fala:"Quero balançar",    cor:"lilas",    mensagem:true,  arasaac:4608},
+
+  fralda:     {rotulo:"Trocar fralda", fala:"Quero trocar a fralda", cor:"laranja", mensagem:true, arasaac:29824},
+  vestir:     {rotulo:"Vestir roupa",  fala:"Quero vestir roupa",    cor:"turquesa", mensagem:true, arasaac:6627},
+  remedio:    {rotulo:"Beber remédio", fala:"Está na hora do remédio", cor:"rosa",  mensagem:true, arasaac:8163},
+  banho:      {rotulo:"Tomar banho",   fala:"Quero tomar banho",     cor:"azul",  mensagem:true, arasaac:6058},
+  dormir:     {rotulo:"Dormir",     fala:"Quero dormir",      cor:"lilas",    mensagem:true,  arasaac:6479},
+  levantar:   {rotulo:"Levantar",   fala:"Quero levantar",    cor:"dourado",  mensagem:true,  arasaac:8989},
+
+  escola:     {rotulo:"Ir para escola",  fala:"Quero ir para a escola", cor:"dourado", mensagem:true, arasaac:32446},
+  terapia:    {rotulo:"Ir para terapia", fala:"Quero ir para a terapia", cor:"azul",   mensagem:true, arasaac:5998},
+  casa:       {rotulo:"Voltar para casa",fala:"Quero voltar para casa", cor:"turquesa", mensagem:true, arasaac:6964},
+  passear:    {rotulo:"Ir passear",      fala:"Quero passear",          cor:"rosa",    mensagem:true, arasaac:29951},
+
+  /* --- Chamar --- */
+  papai:      {rotulo:"Papai",      fala:"Papai",             cor:"turquesa", mensagem:true,  icone:"papai", arasaac:2497},
+  mamae:      {rotulo:"Mamãe",      fala:"Mamãe",             cor:"rosa",     mensagem:true,  icone:"mamae", arasaac:2458},
+
+  /* --- resposta --- */
+  sim:        {rotulo:"Sim",        fala:"Sim",               cor:"sim",      icone:"visto",   arasaac:5584},
+  nao:        {rotulo:"Não",        fala:"Não",               cor:"nao",      icone:"pare",    arasaac:5526}
+};
+
+/* tipo "menu": até 4 por página, reconhecimento de categoria.
+   tipo "escolha": 2 por página, decisão motora.
+   pergunta null: nenhum card de pergunta na tela. */
+const TELAS = {
+  simnao:   {tipo:"resposta", itens:["sim","nao"], volta:null, pergunta:null},
+
+  menu:     {tipo:"menu", itens:["quero","sinto","fazer","chamar","at_mais","at_dor","at_fralda"],
+             volta:null, pergunta:"O que você quer?"},
+
+  quero:    {tipo:"menu", itens:["comer","beber","mais","video"], volta:"menu", pergunta:"Quero o quê?"},
+  comer:    {tipo:"escolha", itens:["queijo","pao","uva","comida"], volta:"quero", pergunta:"Comer o quê?"},
+  beber:    {tipo:"escolha", itens:["agua","suco","cafe","leitinho"], volta:"quero", pergunta:"Beber o quê?"},
+  mais:     {tipo:"escolha", itens:["quero_mais","nao_mais"], volta:"quero", pergunta:"Quer mais?"},
+  video:    {tipo:"escolha", itens:["trocar","parar","desenho","musica"], volta:"quero", pergunta:"E o vídeo?"},
+
+  sinto:    {tipo:"escolha", itens:["dor","cansada","irritada","feliz","sono","medo"], volta:"menu", pergunta:"Como você está?"},
+  dor:      {tipo:"escolha", itens:["cabeca","barriga"], volta:"sinto", pergunta:"Onde dói?"},
+
+  fazer:    {tipo:"menu", itens:["sair","brincar","cuidados","lugares"], volta:"menu", pergunta:"Fazer o quê?"},
+  sair:     {tipo:"escolha", itens:["rede","bicicleta","nadar","mudar_lugar"], volta:"fazer", pergunta:"Sair para onde?"},
+  brincar:  {tipo:"escolha", itens:["brinquedo","pular","de_pe","balancar"], volta:"fazer", pergunta:"Brincar de quê?"},
+  cuidados: {tipo:"escolha", itens:["fralda","vestir","remedio","banho","dormir","levantar"], volta:"fazer", pergunta:"O que você precisa?"},
+  lugares:  {tipo:"escolha", itens:["escola","terapia","casa","passear"], volta:"fazer", pergunta:"Ir para onde?"},
+
+  chamar:   {tipo:"escolha", itens:["papai","mamae"], volta:"menu", pergunta:"Chamar quem?"}
+};
+
+function corVar(token){ return "var(--c-" + token + ")"; }
+
+/* HTML do símbolo de um card. Ordem: pictograma ARASAAC em placa clara;
+   se a configuração pedir traço simples e existir desenho próprio, o desenho;
+   se faltar um dos dois, cai no outro. */
+function simboloHTML(id, preenchido){
+  const def = CARDS[id];
+  const cor = preenchido ? "var(--fundo-crianca)" : corVar(def.cor);
+  const simples = def.icone
+    ? '<div style="height:100%;display:flex;align-items:center;color:' + cor + '">' + icone(def.icone) + '</div>'
+    : null;
+  const picto = def.arasaac
+    ? '<div class="placa"><img alt="" src="conteudo/arasaac/' + def.arasaac + '.png"></div>'
+    : null;
+  if(CFG.simbolos === "simples" && simples) return simples;
+  return picto || simples || "";
+}
+
+/* quantos cards por página nesta tela */
+function porPagina(nome){
+  const t = TELAS[nome];
+  if(!t) return 2;
+  if(t.tipo === "menu") return CFG.porPaginaMenu;
+  return CFG.porPaginaEscolha;
+}
+function totalPaginas(nome){
+  return Math.max(1, Math.ceil(TELAS[nome].itens.length / porPagina(nome)));
+}
+function itensDaPagina(nome, pagina){
+  const n = porPagina(nome);
+  return TELAS[nome].itens.slice(pagina * n, pagina * n + n);
+}
+
+/* ============================================================
+   2. CONFIGURAÇÃO
+   ============================================================ */
+
+const VERSAO_APP = "2.4";
+/* Linha de apoio "O verbo na ponta do dedo": rever se o app ganhar acesso
+   por acionador ou por olhar, porque deixa de descrever todos os usuarios. */
+
+/* Créditos de terceiros exibidos na seção Sobre.
+   Ao incluir pictogramas ARASAAC, troque pelo crédito oficial:
+   "Autor pictogramas: Sergio Palao. Origen: ARASAAC (http://www.arasaac.org).
+    Licencia: CC (BY-NC-SA). Propiedad: Gobierno de Aragón (España)" */
+const CREDITOS_TERCEIROS = "Pictogramas: autor Sergio Palao. Origem: ARASAAC (arasaac.org). Licença: CC BY-NC-SA. Propriedade: Governo de Aragão (Espanha). Usados sem modificação, exibidos sobre placa clara.";
+
+const PADRAO = {
+  ativacao:"soltar",        // encostar | soltar | permanencia
+  permanenciaMs:600,
+  debounceMs:2500,
+  raioPalma:0,              // 0 desliga o filtro; valor em px do raio do toque
+  alturaIcone:60,           // % da altura do card
+  mostrarRotulo:true,
+  tamanhoRotulo:42,
+  estiloCard:"contorno",    // contorno | preenchido
+  confirmar:true,
+  perguntarEmVoz:true,
+  modoModelagem:false,
+  mostrarFaixa:false,
+  velocidadeFala:0.85,
+  vozURI:"",
+  preferirVozFeminina:true,
+  tomVoz:1.15,              // acima de 1 deixa a voz mais aguda, perto de voz infantil
+  ajusteTom:1.0,
+  segurarRetornoMs:4000,
+  ajuda:"nenhuma",          // nenhuma | verbal | fisica
+  alerta:"alerta",          // alerta | intermediario | sonolenta
+  mostrarPergunta:true,     // terceiro card acima dos alvos
+  alturaPergunta:20,        // % da altura da tela
+  falarPerguntaAoAbrir:false,
+  coresSimNao:"semantico",  // semantico (verde e vermelho) | paleta (turquesa e rosa)
+  vaoCards:6,               // vao entre os dois cards, em % da largura
+  bordaCard:12,             // px
+  simbolos:"arasaac",       // arasaac | simples
+  porPaginaMenu:4,          // cards por página numa prancha de categorias
+  porPaginaEscolha:2,       // cards por página numa escolha
+  homeToqueLongoMs:5000,    // botão do adulto: segurar este tempo para sair. 0 = toque simples
+  homeNaPranchaSimNao:true,
+  destaqueMs:1600,          // tempo que a escolha fica destacada antes de seguir
+  travaAposAcaoMs:1200,     // toque ignorado depois que a fala e o destaque terminam
+  esperarFalaTerminar:true  // só segue depois que o app terminou de falar
+};
+
+let CFG = Object.assign({}, PADRAO);
+try{
+  const salvo = localStorage.getItem("liz_cfg");
+  if(salvo) CFG = Object.assign({}, PADRAO, JSON.parse(salvo));
+}catch(e){}
+
+function aplicarTema(){
+  const r = document.documentElement.style;
+  r.setProperty("--altura-pergunta", CFG.alturaPergunta + "%");
+  r.setProperty("--vao-cards", CFG.vaoCards + "vw");
+  r.setProperty("--borda-card", CFG.bordaCard + "px");
+  document.body.dataset.simnao = CFG.coresSimNao;
+}
+
+function salvarCfg(){
+  try{ localStorage.setItem("liz_cfg", JSON.stringify(CFG)); }catch(e){}
+  aplicarTema();
+}
+
+/* ============================================================
+   3. ÍCONES
+   SVG traçado grosso, alto contraste, sem detalhe pequeno.
+   ============================================================ */
+
+function icone(nome){
+  const c = 'fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"';
+  const corpos = {
+    pessoas:'<circle cx="36" cy="32" r="14" '+c+'/><path d="M14 82c0-14 10-24 22-24s22 10 22 24" '+c+'/>'+
+            '<circle cx="70" cy="38" r="11" '+c+'/><path d="M56 84c0-11 7-19 16-19s16 8 16 19" '+c+'/>',
+    mao:'<circle cx="50" cy="30" r="13" '+c+'/><path d="M12 58h76" '+c+'/><path d="M18 58c2 17 15 28 32 28s30-11 32-28" '+c+'/>',
+    papai:'<circle cx="50" cy="34" r="17" '+c+'/><path d="M33 25c4-7 30-7 34 0" '+c+'/><path d="M18 88c0-17 14-28 32-28s32 11 32 28" '+c+'/>',
+    mamae:'<circle cx="50" cy="36" r="17" '+c+'/><path d="M31 34c0-14 38-14 38 0M30 32v24M70 32v24" '+c+'/><path d="M20 88c0-16 13-26 30-26s30 10 30 26" '+c+'/>',
+    prato:'<circle cx="50" cy="52" r="30" '+c+'/><circle cx="50" cy="52" r="16" '+c+'/><path d="M12 18v20M50 14v6" '+c+'/>',
+    copo:'<path d="M30 30h40l-5 52a6 6 0 01-6 6H41a6 6 0 01-6-6z" '+c+'/><path d="M34 52h32" '+c+'/><path d="M58 30l8-18" '+c+'/>',
+    tela:'<rect x="14" y="24" width="72" height="48" rx="8" '+c+'/><path d="M43 40l18 8-18 8z" '+c+'/><path d="M36 84h28" '+c+'/>',
+    trocar:'<path d="M22 40a28 28 0 0148-14" '+c+'/><path d="M70 14v14H56" '+c+'/>'+
+           '<path d="M78 60a28 28 0 01-48 14" '+c+'/><path d="M30 86V72h14" '+c+'/>',
+    parar:'<path d="M36 16h28l20 20v28L64 84H36L16 64V36z" '+c+'/><path d="M35 35l30 30M65 35L35 65" '+c+'/>',
+    visto:'<path d="M20 54 L42 76 L82 26" '+c+'/>',
+    pare:'<path d="M30 60V30a6 6 0 0112 0v22M42 52V22a6 6 0 0112 0v30M54 54V28a6 6 0 0112 0v26M66 56V38a6 6 0 0112 0v28c0 14-11 24-25 24S30 80 30 66" '+c+'/>'
+  };
+  return '<svg viewBox="0 0 100 100" aria-hidden="true">'+(corpos[nome]||"")+'</svg>';
+}
+
+/* ============================================================
+   4. ARMAZENAMENTO LOCAL (IndexedDB)
+   midia: gravações de voz e fotos.  log: registro de uso.
+   Nada sai do aparelho.
+   ============================================================ */
+
+let DB = null;
+function abrirDB(){
+  return new Promise(function(ok, erro){
+    const r = indexedDB.open("liz_caa", 1);
+    r.onupgradeneeded = function(ev){
+      const db = ev.target.result;
+      if(!db.objectStoreNames.contains("midia")) db.createObjectStore("midia");
+      if(!db.objectStoreNames.contains("log")) db.createObjectStore("log", {autoIncrement:true});
+    };
+    r.onsuccess = function(){ DB = r.result; ok(DB); };
+    r.onerror = function(){ erro(r.error); };
+  });
+}
+function put(store, valor, chave){
+  return new Promise(function(ok, erro){
+    const t = DB.transaction(store, "readwrite");
+    const req = chave === undefined ? t.objectStore(store).add(valor) : t.objectStore(store).put(valor, chave);
+    req.onsuccess = function(){ ok(req.result); };
+    req.onerror = function(){ erro(req.error); };
+  });
+}
+function get(store, chave){
+  return new Promise(function(ok, erro){
+    const req = DB.transaction(store, "readonly").objectStore(store).get(chave);
+    req.onsuccess = function(){ ok(req.result); };
+    req.onerror = function(){ erro(req.error); };
+  });
+}
+function del(store, chave){
+  return new Promise(function(ok, erro){
+    const req = DB.transaction(store, "readwrite").objectStore(store).delete(chave);
+    req.onsuccess = function(){ ok(); };
+    req.onerror = function(){ erro(req.error); };
+  });
+}
+function todos(store){
+  return new Promise(function(ok, erro){
+    const req = DB.transaction(store, "readonly").objectStore(store).getAll();
+    req.onsuccess = function(){ ok(req.result || []); };
+    req.onerror = function(){ erro(req.error); };
+  });
+}
+function limpar(store){
+  return new Promise(function(ok, erro){
+    const req = DB.transaction(store, "readwrite").objectStore(store).clear();
+    req.onsuccess = function(){ ok(); };
+    req.onerror = function(){ erro(req.error); };
+  });
+}
+
+/* cache de URLs de mídia, para não recriar blob URL a cada render */
+const CACHE_MIDIA = {};
+async function urlMidia(chave){
+  if(CACHE_MIDIA[chave] !== undefined) return CACHE_MIDIA[chave];
+  let blob = null;
+  try{ blob = await get("midia", chave); }catch(e){}
+  CACHE_MIDIA[chave] = blob ? URL.createObjectURL(blob) : null;
+  return CACHE_MIDIA[chave];
+}
+function invalidarMidia(chave){
+  if(CACHE_MIDIA[chave]) URL.revokeObjectURL(CACHE_MIDIA[chave]);
+  delete CACHE_MIDIA[chave];
+}
+
+/* ============================================================
+   5. VOZ
+   ============================================================ */
+
+let VOZES = [];
+function carregarVozes(){
+  VOZES = (window.speechSynthesis ? speechSynthesis.getVoices() : []) || [];
+}
+if(window.speechSynthesis){
+  carregarVozes();
+  speechSynthesis.onvoiceschanged = carregarVozes;
+}
+/* pistas de voz feminina nos nomes usados por Android, Chrome e Windows.
+   Nenhuma API informa o gênero, então isto é heurística; a lista completa
+   fica na configuração para escolha manual. */
+const PISTAS_FEMININAS = ["female","feminin","mulher","woman",
+  "luciana","francisca","fernanda","camila","maria","vitória","vitoria","joana",
+  "helena","inês","ines","catarina","raquel","leila","clara","-f0","_f0"];
+
+function pareceFeminina(v){
+  const nome = ((v.name || "") + " " + (v.voiceURI || "")).toLowerCase();
+  return PISTAS_FEMININAS.some(function(p){ return nome.indexOf(p) >= 0; });
+}
+
+function vozEscolhida(){
+  if(!VOZES.length) carregarVozes();
+  const escolhida = VOZES.find(function(x){ return x.voiceURI === CFG.vozURI; });
+  if(escolhida) return escolhida;
+  const pt = VOZES.filter(function(x){ return (x.lang||"").toLowerCase().indexOf("pt") === 0; });
+  if(!pt.length) return null;
+  const nota = function(v){
+    return (CFG.preferirVozFeminina && pareceFeminina(v) ? 2 : 0) + (v.localService ? 1 : 0);
+  };
+  return pt.slice().sort(function(a,b){ return nota(b) - nota(a); })[0];
+}
+function falarTTS(texto){
+  return new Promise(function(ok){
+    if(!window.speechSynthesis || !texto){ ok(); return; }
+    try{
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(texto);
+      const v = vozEscolhida();
+      if(v){ u.voice = v; u.lang = v.lang; } else { u.lang = "pt-BR"; }
+      u.rate = CFG.velocidadeFala;
+      u.pitch = CFG.tomVoz;
+      let pronto = false;
+      const fim = function(){ if(!pronto){ pronto = true; ok(); } };
+      u.onend = fim; u.onerror = fim;
+      /* rede de segurança: algumas vozes não disparam onend */
+      setTimeout(fim, 1200 + texto.length * 90);
+      speechSynthesis.speak(u);
+    }catch(e){ ok(); }
+  });
+}
+
+function espera(ms){ return new Promise(function(ok){ setTimeout(ok, ms); }); }
+
+let audioAtual = null;
+function tocarBlobURL(url, taxa){
+  return new Promise(function(ok){
+    try{
+      if(audioAtual){ audioAtual.pause(); audioAtual = null; }
+      const a = new Audio(url);
+      a.playbackRate = taxa || 1;
+      audioAtual = a;
+      a.onended = function(){ ok(); };
+      a.onerror = function(){ ok(); };
+      a.play().catch(function(){ ok(); });
+    }catch(e){ ok(); }
+  });
+}
+
+/* fala a mensagem do card: gravação se houver, TTS se não houver */
+async function falarCard(id, faixa){
+  faixa = faixa || "msg";
+  const url = await urlMidia("audio:"+id+":"+faixa);
+  if(url){
+    await tocarBlobURL(url, faixa === "msg" ? CFG.ajusteTom : 1);
+    return;
+  }
+  if(faixa === "msg") await falarTTS(CARDS[id] ? CARDS[id].fala : "");
+}
+
+/* ============================================================
+   6. REGISTRO DE USO
+   ============================================================ */
+
+const SESSAO = "s" + Date.now().toString(36);
+
+function registrar(dados){
+  const linha = Object.assign({
+    data_hora: new Date().toISOString(),
+    sessao: SESSAO,
+    ajuda: CFG.ajuda,
+    alerta: CFG.alerta
+  }, dados);
+  if(DB) put("log", linha).catch(function(){});
+}
+
+function paraCSV(linhas){
+  const cols = ["data_hora","sessao","tela","card","rotulo","evento","latencia_ms","duracao_toque_ms","ajuda","alerta"];
+  const esc = function(v){
+    if(v === undefined || v === null) return "";
+    const s = String(v);
+    return /[",;\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
+  };
+  const out = [cols.join(";")];
+  linhas.forEach(function(l){ out.push(cols.map(function(c){ return esc(l[c]); }).join(";")); });
+  return out.join("\n");
+}
+
+/* ============================================================
+   7. NAVEGAÇÃO, TOQUE E AÇÕES
+   ============================================================ */
+
+const elGrade   = document.getElementById("grade");
+const elFaixa   = document.getElementById("faixa");
+const elVoltar  = document.getElementById("voltar");
+const elHome    = document.getElementById("home");
+const elPaginas = document.getElementById("paginas");
+const elRetorno = document.getElementById("retorno");
+const elAviso   = document.getElementById("aviso");
+const elPergunta= document.getElementById("pergunta");
+
+let telaAtual = "menu";
+let pagina = 0;
+let modoConfirmacao = null;   // id do card aguardando confirmação
+let telaDeOrigem = "menu";
+let paginaDeOrigem = 0;
+let tRender = 0;
+let tUltimaAtivacao = -1e9;   // sem bloqueio no primeiro toque depois de abrir
+let travado = false;          // durante a resposta a um toque, nada mais é aceito
+let seqNav = 0;               // muda a cada navegação; fluxo antigo para sozinho
+
+/* interrompe qualquer resposta em andamento: fala, áudio e tela de entrega */
+function interromper(){
+  seqNav++;
+  travado = false;
+  try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
+  try{ if(audioAtual){ audioAtual.pause(); audioAtual = null; } }catch(e){}
+  elRetorno.classList.remove("ativo");
+}
+
+function aviso(txt){
+  elAviso.textContent = txt;
+  elAviso.classList.add("ativo");
+  clearTimeout(aviso._t);
+  aviso._t = setTimeout(function(){ elAviso.classList.remove("ativo"); }, 2600);
+}
+
+function atualizarFaixa(){
+  if(!CFG.mostrarFaixa){ elFaixa.classList.add("oculta"); return; }
+  elFaixa.classList.remove("oculta");
+  elFaixa.textContent = "sessão " + SESSAO + "  ·  " + telaAtual + " pág " + (pagina+1)
+    + "  ·  ajuda: " + CFG.ajuda + "  ·  alerta: " + CFG.alerta
+    + (modoConfirmacao ? "  ·  confirmando: " + CARDS[modoConfirmacao].rotulo : "");
+}
+
+/* ---------- um card ---------- */
+
+async function montarCard(id, muitos){
+  const def = CARDS[id];
+  const div = document.createElement("div");
+  div.className = "card" + (CFG.mostrarRotulo ? "" : " sem-rotulo") + (CFG.estiloCard === "preenchido" ? " preenchido" : "");
+  div.dataset.card = id;
+  div.style.borderColor = corVar(def.cor);
+  if(CFG.estiloCard === "preenchido") div.style.background = corVar(def.cor);
+
+  const foto = await urlMidia("foto:"+id);
+  const wrap = document.createElement("div");
+  wrap.style.height = CFG.alturaIcone + "%";
+  wrap.style.display = "flex";
+  wrap.style.alignItems = "center";
+  if(foto){
+    wrap.innerHTML = '<div class="placa"><img alt="" src="'+foto+'"></div>';
+  }else{
+    wrap.innerHTML = simboloHTML(id, CFG.estiloCard === "preenchido");
+    const svg = wrap.querySelector("svg");
+    if(svg) svg.style.height = "100%";
+  }
+  div.appendChild(wrap);
+
+  const rot = document.createElement("div");
+  rot.className = "rotulo";
+  rot.style.fontSize = Math.round(CFG.tamanhoRotulo * (muitos ? 0.58 : 1)) + "px";
+  rot.textContent = def.rotulo;
+  div.appendChild(rot);
+
+  ligarToque(div, id);
+  return div;
+}
+
+/* ---------- card da pergunta ---------- */
+
+function textoPergunta(){
+  if(modoConfirmacao) return CARDS[modoConfirmacao].rotulo + "?";
+  return TELAS[telaAtual].pergunta;
+}
+
+async function desenharPergunta(){
+  const mostrar = CFG.mostrarPergunta && !!textoPergunta();
+  elPergunta.classList.toggle("oculta", !mostrar);
+  elPergunta.innerHTML = "";
+  if(!mostrar) return;
+  if(modoConfirmacao){
+    const obj = document.createElement("div");
+    obj.className = "obj";
+    const foto = await urlMidia("foto:"+modoConfirmacao);
+    if(foto) obj.innerHTML = '<div class="placa"><img alt="" src="'+foto+'"></div>';
+    else obj.innerHTML = simboloHTML(modoConfirmacao, false);
+    elPergunta.appendChild(obj);
+  }
+  const t = document.createElement("div");
+  t.className = "txt";
+  t.textContent = textoPergunta();
+  elPergunta.appendChild(t);
+}
+
+/* ---------- desenho da tela ---------- */
+
+async function desenhar(){
+  const tela = TELAS[telaAtual];
+  const ids = modoConfirmacao ? ["sim","nao"] : itensDaPagina(telaAtual, pagina);
+  const muitos = ids.length > 2;
+
+  await desenharPergunta();
+  elGrade.className = muitos ? "quatro" : "";
+  elGrade.innerHTML = "";
+  for(let i=0;i<ids.length;i++) elGrade.appendChild(await montarCard(ids[i], muitos));
+
+  /* navegação */
+  const emResposta = telaAtual === "simnao" && !modoConfirmacao;
+  const mostraHome = !(emResposta && !CFG.homeNaPranchaSimNao);
+  elHome.classList.toggle("oculto", !mostraHome);
+  elPergunta.classList.toggle("com-home", mostraHome);
+  const temVolta = !modoConfirmacao && tela.volta;
+  elVoltar.classList.toggle("oculto", !temVolta);
+  desenharPaginas();
+  const temPaginas = !modoConfirmacao && totalPaginas(telaAtual) > 1;
+  elGrade.classList.toggle("rodape", temPaginas || temVolta);
+
+  atualizarFaixa();
+  tRender = performance.now();
+
+  if(modoConfirmacao && CFG.perguntarEmVoz){
+    setTimeout(function(){ falarTTS(CARDS[modoConfirmacao].rotulo + "? Sim ou não."); }, 220);
+  }else if(!modoConfirmacao && CFG.falarPerguntaAoAbrir && tela.pergunta){
+    setTimeout(function(){ falarTTS(tela.pergunta); }, 220);
+  }
+}
+
+function desenharPaginas(){
+  const total = modoConfirmacao ? 1 : totalPaginas(telaAtual);
+  elPaginas.innerHTML = "";
+  elPaginas.classList.toggle("oculto", total < 2);
+  if(total < 2) return;
+  const seta = function(dir, texto){
+    const b = document.createElement("div");
+    b.className = "nav";
+    b.innerHTML = '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="10" '
+                + 'stroke-linecap="round" stroke-linejoin="round"><path d="'
+                + (dir < 0 ? "M62 22 L34 50 L62 78" : "M38 22 L66 50 L38 78") + '"/></svg>';
+    b.addEventListener("click", function(){
+      interromper();
+      pagina = (pagina + dir + total) % total;
+      registrar({tela:telaAtual, card:"pagina", rotulo:texto, evento:"trocou_pagina"});
+      desenhar();
+    });
+    return b;
+  };
+  const marca = document.createElement("div");
+  marca.className = "marca-pagina";
+  marca.textContent = (pagina+1) + " de " + total;
+  elPaginas.appendChild(seta(-1,"voltar"));
+  elPaginas.appendChild(marca);
+  elPaginas.appendChild(seta(1,"avançar"));
+}
+
+function irPara(tela, pag){
+  seqNav++;
+  telaAtual = tela;
+  pagina = pag || 0;
+  modoConfirmacao = null;
+  desenhar();
+}
+
+/* ---------- toque nos cards ---------- */
+
+function ligarToque(el, id){
+  let tInicio = 0, timerDwell = null, dentro = false, ativado = false;
+
+  const palmaBloqueada = function(ev){
+    if(!CFG.raioPalma) return false;
+    const t = ev.touches && ev.touches[0];
+    if(!t) return false;
+    return Math.max(t.radiusX || 0, t.radiusY || 0) > CFG.raioPalma;
+  };
+
+  const ativar = function(){
+    if(ativado || travado) return;
+    const agora = performance.now();
+    if(agora - tUltimaAtivacao < CFG.debounceMs) return;
+    ativado = true;
+    tUltimaAtivacao = agora;
+    acionar(id, Math.round(agora - tRender), Math.round(agora - tInicio));
+  };
+
+  el.addEventListener("touchstart", function(ev){
+    if(palmaBloqueada(ev)) return;
+    dentro = true; ativado = false; tInicio = performance.now();
+    el.classList.add("pressionado");
+    if(CFG.ativacao === "encostar") ativar();
+    if(CFG.ativacao === "permanencia") timerDwell = setTimeout(function(){ if(dentro) ativar(); }, CFG.permanenciaMs);
+  }, {passive:true});
+
+  el.addEventListener("touchmove", function(ev){
+    const t = ev.touches[0]; if(!t) return;
+    const r = el.getBoundingClientRect();
+    const ok = t.clientX >= r.left && t.clientX <= r.right && t.clientY >= r.top && t.clientY <= r.bottom;
+    if(!ok && dentro){
+      dentro = false; el.classList.remove("pressionado");
+      if(timerDwell) clearTimeout(timerDwell);
+    }
+  }, {passive:true});
+
+  el.addEventListener("touchend", function(){
+    el.classList.remove("pressionado");
+    if(timerDwell) clearTimeout(timerDwell);
+    if(CFG.ativacao === "soltar" && dentro) ativar();
+    dentro = false;
+  }, {passive:true});
+
+  el.addEventListener("touchcancel", function(){
+    dentro = false; el.classList.remove("pressionado");
+    if(timerDwell) clearTimeout(timerDwell);
+  }, {passive:true});
+
+  /* mouse, para teste no computador */
+  el.addEventListener("mousedown", function(){ tInicio = performance.now(); dentro = true; ativado = false; });
+  el.addEventListener("mouseup", function(){ if(dentro) ativar(); dentro = false; });
+}
+
+/* ---------- resposta a uma escolha ---------- */
+
+async function responderEscolha(id, falarAgora){
+  travado = true;
+  elGrade.querySelectorAll(".card").forEach(function(c){
+    c.classList.add(c.dataset.card === id ? "escolhido" : "apagado");
+  });
+  const fala = falarAgora ? falarCard(id) : Promise.resolve();
+  if(CFG.esperarFalaTerminar) await fala;
+  await espera(CFG.destaqueMs);
+}
+
+function destravar(){
+  setTimeout(function(){
+    travado = false;
+    tUltimaAtivacao = performance.now();
+  }, CFG.travaAposAcaoMs);
+}
+
+async function acionar(id, latencia, duracao){
+  const def = CARDS[id];
+  const meuSeq = seqNav;
+  const cancelado = function(){ return meuSeq !== seqNav; };
+
+  /* prancha de resposta: fala, destaca e fica onde está */
+  if(telaAtual === "simnao" && !modoConfirmacao){
+    registrar({tela:"simnao", card:id, rotulo:def.rotulo, evento:"respondeu",
+               latencia_ms:latencia, duracao_toque_ms:duracao});
+    await responderEscolha(id, true);
+    if(cancelado()) return;
+    await desenhar();
+    destravar();
+    return;
+  }
+
+  /* tela de confirmação */
+  if(modoConfirmacao){
+    const alvo = modoConfirmacao;
+    registrar({tela:"confirmacao", card:alvo, rotulo:CARDS[alvo].rotulo,
+               evento: id === "sim" ? "confirmado_sim" : "confirmado_nao",
+               latencia_ms:latencia, duracao_toque_ms:duracao});
+    await responderEscolha(id, true);
+    if(cancelado()) return;
+    modoConfirmacao = null;
+    if(id === "sim"){
+      await entregarMensagem(alvo);
+    }else{
+      telaAtual = telaDeOrigem; pagina = paginaDeOrigem;
+      await desenhar();
+      destravar();
+    }
+    return;
+  }
+
+  registrar({tela:telaAtual, card:id, rotulo:def.rotulo, evento: def.abre ? "abriu_prancha" : "selecionou",
+             latencia_ms:latencia, duracao_toque_ms:duracao});
+
+  if(CFG.modoModelagem){ travado = true; await falarCard(id, "pista"); }
+
+  if(def.abre){
+    await responderEscolha(id, true);
+    if(cancelado()) return;
+    telaAtual = def.abre; pagina = 0; modoConfirmacao = null;
+    await desenhar();
+    destravar();
+    return;
+  }
+
+  if(def.mensagem){
+    await responderEscolha(id, true);
+    if(cancelado()) return;
+    if(CFG.confirmar){
+      telaDeOrigem = telaAtual; paginaDeOrigem = pagina;
+      modoConfirmacao = id;
+      await desenhar();
+      destravar();
+    }else{
+      await entregarMensagem(id);
+    }
+  }
+}
+
+async function entregarMensagem(id){
+  const def = CARDS[id];
+  const meuSeq = seqNav;
+  elRetorno.innerHTML = '<div style="height:46vmin">'+simboloHTML(id, false)+'</div>'
+                      + '<div class="texto" style="color:'+corVar(def.cor)+'">'+def.rotulo+'</div>';
+  elRetorno.classList.add("ativo");
+  registrar({tela:"entrega", card:id, rotulo:def.rotulo, evento:"mensagem_entregue"});
+  travado = true;
+  await falarCard(id, "msg");
+  if(meuSeq !== seqNav) return;
+  await espera(CFG.segurarRetornoMs);
+  if(meuSeq !== seqNav) return;
+  elRetorno.classList.remove("ativo");
+  telaAtual = "menu"; pagina = 0; modoConfirmacao = null;
+  await desenhar();
+  destravar();
+}
+
+/* ---------- navegação de nível ---------- */
+
+elVoltar.addEventListener("click", function(){
+  interromper();
+  if(modoConfirmacao){
+    modoConfirmacao = null;
+    telaAtual = telaDeOrigem; pagina = paginaDeOrigem;
+    desenhar(); return;
+  }
+  const v = TELAS[telaAtual].volta;
+  if(v){ registrar({tela:telaAtual, card:"voltar", rotulo:"voltar", evento:"voltou_nivel"}); irPara(v); }
+});
+
+/* home: pequeno, no alto à esquerda. Funciona mesmo durante a resposta a uma
+   escolha, interrompendo fala e destaque, porque o adulto precisa poder sair
+   a qualquer momento. Toque longo é opcional e está desligado por padrão. */
+(function(){
+  let t = null, jaAcionou = false;
+
+  const barra = elHome.querySelector(".progresso");
+
+  const zerarBarra = function(){
+    barra.style.transition = "none";
+    barra.style.width = "0";
+  };
+
+  /* destino único, em qualquer prancha: a escolha de prancha, que é tela do adulto */
+  const acionarHome = function(){
+    jaAcionou = true;
+    elHome.classList.remove("segurando");
+    zerarBarra();
+    interromper();
+    registrar({tela:telaAtual, card:"home", rotulo:"home", evento:"saiu_para_escolha_de_prancha"});
+    document.getElementById("pranchas").classList.remove("oculta");
+  };
+
+  elHome.addEventListener("pointerdown", function(ev){
+    jaAcionou = false;
+    elHome.classList.add("segurando");
+    /* mantém o dedo associado ao botão mesmo se escorregar um pouco */
+    try{ elHome.setPointerCapture(ev.pointerId); }catch(e){}
+    if(CFG.homeToqueLongoMs > 0){
+      if(t) clearTimeout(t);
+      t = setTimeout(acionarHome, CFG.homeToqueLongoMs);
+      /* a barra enche durante a pressão, para o adulto saber que está contando */
+      zerarBarra();
+      requestAnimationFrame(function(){
+        barra.style.transition = "width " + CFG.homeToqueLongoMs + "ms linear";
+        barra.style.width = "100%";
+      });
+    }
+  });
+
+  elHome.addEventListener("pointerup", function(){
+    elHome.classList.remove("segurando");
+    zerarBarra();
+    if(t){ clearTimeout(t); t = null; }
+    if(jaAcionou) return;
+    if(CFG.homeToqueLongoMs === 0) acionarHome();
+    else aviso("Segure " + Math.round(CFG.homeToqueLongoMs/1000) + " segundos para sair");
+  });
+
+  elHome.addEventListener("pointercancel", function(){
+    elHome.classList.remove("segurando");
+    zerarBarra();
+    if(t){ clearTimeout(t); t = null; }
+  });
+
+  /* reserva: clique de mouse e teclado */
+  elHome.addEventListener("click", function(){
+    if(!jaAcionou && CFG.homeToqueLongoMs === 0) acionarHome();
+  });
+})();
+
+/* tocar no card da pergunta repete a pergunta, sem contar como escolha */
+elPergunta.addEventListener("click", function(){
+  if(travado) return;
+  const t = modoConfirmacao ? CARDS[modoConfirmacao].rotulo + "? Sim ou não." : TELAS[telaAtual].pergunta;
+  if(!t) return;
+  falarTTS(t);
+  registrar({tela: modoConfirmacao ? "confirmacao" : telaAtual, card:"pergunta",
+             rotulo:textoPergunta(), evento:"repetiu_pergunta"});
+});
+
+/* ============================================================
+   9. ACESSO À CONFIGURAÇÃO: toque longo de 3 s no canto
+   ============================================================ */
+
+const canto = document.getElementById("canto-config");
+let timerCanto = null;
+canto.addEventListener("pointerdown", function(){
+  timerCanto = setTimeout(abrirConfig, 3000);
+});
+["pointerup","pointerleave","pointercancel"].forEach(function(ev){
+  canto.addEventListener(ev, function(){ if(timerCanto) clearTimeout(timerCanto); });
+});
+
+/* ============================================================
+   10. TELA DE CONFIGURAÇÃO
+   ============================================================ */
+
+const elConfig = document.getElementById("config");
+const elCorpo  = document.getElementById("config-corpo");
+
+document.getElementById("fechar-config").addEventListener("click", function(){
+  elConfig.classList.remove("ativo");
+  salvarCfg();
+  desenhar();
+});
+
+function abrirConfig(){
+  elConfig.classList.add("ativo");
+  renderConfig();
+}
+
+function linha(titulo, ajudaTxt, controle){
+  const d = document.createElement("div");
+  d.className = "linha";
+  const esq = document.createElement("div");
+  esq.innerHTML = "<div>"+titulo+"</div>" + (ajudaTxt ? '<span class="ajuda">'+ajudaTxt+"</span>" : "");
+  d.appendChild(esq);
+  d.appendChild(controle);
+  return d;
+}
+function selecao(valor, opcoes, aoMudar){
+  const s = document.createElement("select");
+  opcoes.forEach(function(o){
+    const op = document.createElement("option");
+    op.value = o[0]; op.textContent = o[1];
+    if(o[0] === valor) op.selected = true;
+    s.appendChild(op);
+  });
+  s.addEventListener("change", function(){ aoMudar(s.value); });
+  return s;
+}
+function deslizante(valor, min, max, passo, sufixo, aoMudar){
+  const w = document.createElement("div");
+  w.style.display = "flex"; w.style.alignItems = "center"; w.style.gap = "10px";
+  const r = document.createElement("input");
+  r.type = "range"; r.min = min; r.max = max; r.step = passo; r.value = valor;
+  const v = document.createElement("span");
+  v.className = "valor"; v.textContent = valor + sufixo;
+  r.addEventListener("input", function(){
+    v.textContent = r.value + sufixo;
+    aoMudar(parseFloat(r.value));
+  });
+  w.appendChild(r); w.appendChild(v);
+  return w;
+}
+function alternador(valor, aoMudar){
+  return selecao(valor ? "1" : "0", [["1","Sim"],["0","Não"]], function(v){ aoMudar(v === "1"); });
+}
+function botao(txt, classe, aoClicar){
+  const b = document.createElement("button");
+  b.className = "btn" + (classe ? " "+classe : "");
+  b.textContent = txt;
+  b.addEventListener("click", aoClicar);
+  return b;
+}
+function titulo(t){
+  const h = document.createElement("h2");
+  h.textContent = t;
+  return h;
+}
+
+async function renderConfig(){
+  elCorpo.innerHTML = "";
+  const add = function(n){ elCorpo.appendChild(n); };
+
+  /* sessão */
+  add(titulo("Sessão de hoje"));
+  add(linha("Nível de ajuda", "Entra em cada linha do registro. Ajuste no começo da sessão.",
+    selecao(CFG.ajuda, [["nenhuma","Nenhuma"],["verbal","Verbal"],["fisica","Física"]],
+      function(v){ CFG.ajuda = v; salvarCfg(); })));
+  add(linha("Estado de alerta", "Sonolência muda o desempenho e precisa ficar registrada.",
+    selecao(CFG.alerta, [["alerta","Alerta"],["intermediario","Intermediário"],["sonolenta","Sonolenta"]],
+      function(v){ CFG.alerta = v; salvarCfg(); })));
+  add(linha("Mostrar faixa de contexto", "Faixa fina no topo, só para o adulto conferir a sessão.",
+    alternador(CFG.mostrarFaixa, function(v){ CFG.mostrarFaixa = v; salvarCfg(); })));
+
+  /* toque */
+  add(titulo("Toque"));
+  add(linha("Quando ativa o card", "Soltar reduz ativação acidental. Encostar é mais rápido. Permanência exige segurar.",
+    selecao(CFG.ativacao, [["soltar","Ao soltar"],["encostar","Ao encostar"],["permanencia","Por permanência"]],
+      function(v){ CFG.ativacao = v; salvarCfg(); })));
+  add(linha("Tempo de permanência", "Só vale no modo permanência.",
+    deslizante(CFG.permanenciaMs, 200, 2500, 50, " ms", function(v){ CFG.permanenciaMs = v; salvarCfg(); })));
+  add(linha("Intervalo entre ativações", "Ignora toques repetidos dentro desse intervalo.",
+    deslizante(CFG.debounceMs, 0, 4000, 100, " ms", function(v){ CFG.debounceMs = v; salvarCfg(); })));
+  add(linha("Filtro de toque com a palma", "Ignora contato com raio maior que este valor. 0 desliga o filtro.",
+    deslizante(CFG.raioPalma, 0, 120, 5, " px", function(v){ CFG.raioPalma = v; salvarCfg(); })));
+
+  /* visual */
+  add(titulo("Tela"));
+  add(linha("Cards por página nas categorias", "Vale para Menu, Quero e Fazer, que são pranchas de categoria.",
+    selecao(String(CFG.porPaginaMenu), [["2","2"],["4","4"]],
+      function(v){ CFG.porPaginaMenu = parseInt(v,10); pagina = 0; salvarCfg(); })));
+  add(linha("Cards por página nas escolhas", "Duas opções é o padrão, pela dificuldade motora.",
+    selecao(String(CFG.porPaginaEscolha), [["2","2"],["4","4"]],
+      function(v){ CFG.porPaginaEscolha = parseInt(v,10); pagina = 0; salvarCfg(); })));
+  add(linha("Tempo para segurar o botão de sair", "O botão no canto superior esquerdo é do adulto e leva à escolha de prancha. Segurar por 5 segundos evita que a criança saia sem querer. 0 vira toque simples.",
+    deslizante(CFG.homeToqueLongoMs, 0, 8000, 500, " ms", function(v){ CFG.homeToqueLongoMs = v; salvarCfg(); })));
+  add(linha("Mostrar o botão de sair na prancha Sim e Não", "Desligado, a prancha de resposta fica sem nenhum outro alvo na tela.",
+    alternador(CFG.homeNaPranchaSimNao, function(v){ CFG.homeNaPranchaSimNao = v; salvarCfg(); })));
+  add(linha("Trocar de prancha", "Volta para a escolha entre Sim e Não e o Menu da Liz.",
+    botao("Escolher prancha", "primario", function(){
+      elConfig.classList.remove("ativo"); salvarCfg();
+      document.getElementById("pranchas").classList.remove("oculta");
+    })));
+  add(linha("Mostrar o card da pergunta", "O terceiro card, acima dos dois alvos, com o objeto e a pergunta.",
+    alternador(CFG.mostrarPergunta, function(v){ CFG.mostrarPergunta = v; salvarCfg(); })));
+  add(linha("Altura do card da pergunta", "Em porcentagem da altura da tela.",
+    deslizante(CFG.alturaPergunta, 10, 35, 1, " %", function(v){ CFG.alturaPergunta = v; salvarCfg(); })));
+  add(linha("Falar a pergunta ao abrir cada tela", "Na confirmação a pergunta é falada pela opção da seção Fluxo.",
+    alternador(CFG.falarPerguntaAoAbrir, function(v){ CFG.falarPerguntaAoAbrir = v; salvarCfg(); })));
+  add(linha("Vão entre os dois cards", "Faixa vazia no meio, onde toque não ativa nada.",
+    deslizante(CFG.vaoCards, 1, 16, 1, " %", function(v){ CFG.vaoCards = v; salvarCfg(); })));
+  add(linha("Espessura da borda do card", "",
+    deslizante(CFG.bordaCard, 4, 28, 1, " px", function(v){ CFG.bordaCard = v; salvarCfg(); })));
+  add(linha("Cores do Sim e do Não", "Semântico: verde e vermelho. Paleta: turquesa e rosa.",
+    selecao(CFG.coresSimNao, [["semantico","Verde e vermelho"],["paleta","Turquesa e rosa"]],
+      function(v){ CFG.coresSimNao = v; salvarCfg(); })));
+
+  add(titulo("Visual"));
+  add(linha("Conjunto de símbolos", "ARASAAC: pictogramas oficiais em placa clara. Traço simples: desenho próprio de uma cor, disponível só no vocabulário essencial; nos demais cards o ARASAAC continua.",
+    selecao(CFG.simbolos, [["arasaac","ARASAAC"],["simples","Traço simples"]],
+      function(v){ CFG.simbolos = v; salvarCfg(); })));
+  add(linha("Estilo do card", "Contorno: figura colorida no preto. Preenchido: bloco de cor cheio.",
+    selecao(CFG.estiloCard, [["contorno","Contorno"],["preenchido","Preenchido"]],
+      function(v){ CFG.estiloCard = v; salvarCfg(); })));
+  add(linha("Altura do símbolo", "",
+    deslizante(CFG.alturaIcone, 30, 82, 2, " %", function(v){ CFG.alturaIcone = v; salvarCfg(); })));
+  add(linha("Mostrar rótulo escrito", "Desligue se o texto competir com a figura.",
+    alternador(CFG.mostrarRotulo, function(v){ CFG.mostrarRotulo = v; salvarCfg(); })));
+  add(linha("Tamanho do rótulo", "",
+    deslizante(CFG.tamanhoRotulo, 20, 88, 2, " px", function(v){ CFG.tamanhoRotulo = v; salvarCfg(); })));
+  add(linha("Tempo da tela de entrega", "Quanto tempo a mensagem fica na tela depois de confirmada.",
+    deslizante(CFG.segurarRetornoMs, 800, 8000, 200, " ms", function(v){ CFG.segurarRetornoMs = v; salvarCfg(); })));
+
+  /* fluxo */
+  add(titulo("Tempo de resposta"));
+  add(linha("Esperar a fala terminar", "Só muda de tela depois que o app terminou de falar. Evita que a próxima tela apareça no meio da frase.",
+    alternador(CFG.esperarFalaTerminar, function(v){ CFG.esperarFalaTerminar = v; salvarCfg(); })));
+  add(linha("Tempo de destaque da escolha", "A carta escolhida fica destacada e as outras apagam por esse tempo, antes de seguir.",
+    deslizante(CFG.destaqueMs, 400, 6000, 100, " ms", function(v){ CFG.destaqueMs = v; salvarCfg(); })));
+  add(linha("Trava depois da resposta", "Tempo extra em que nenhum toque é aceito, já na tela nova.",
+    deslizante(CFG.travaAposAcaoMs, 0, 4000, 100, " ms", function(v){ CFG.travaAposAcaoMs = v; salvarCfg(); })));
+
+  add(titulo("Fluxo"));
+  add(linha("Pedir confirmação Sim ou Não", "Desligar faz o card falar direto, sem a tela de confirmação.",
+    alternador(CFG.confirmar, function(v){ CFG.confirmar = v; salvarCfg(); })));
+  add(linha("Perguntar em voz alta na confirmação", "O app diz, por exemplo, Sede? Sim ou não.",
+    alternador(CFG.perguntarEmVoz, function(v){ CFG.perguntarEmVoz = v; salvarCfg(); })));
+  add(linha("Modo modelagem", "Toca a faixa de pista gravada por você antes da mensagem. Use quando estiver ensinando.",
+    alternador(CFG.modoModelagem, function(v){ CFG.modoModelagem = v; salvarCfg(); })));
+
+  /* voz */
+  add(titulo("Voz sintética"));
+  carregarVozes();
+  const opcoesVoz = [["","Automática: feminina e offline, quando houver"]].concat(
+    VOZES.filter(function(v){ return (v.lang||"").toLowerCase().indexOf("pt") === 0; })
+         .map(function(v){ return [v.voiceURI, v.name
+              + (pareceFeminina(v) ? " · feminina?" : "")
+              + (v.localService ? " · offline" : " · online")]; })
+  );
+  add(linha("Voz", "A marca feminina? é palpite pelo nome, porque o Android não informa o gênero. Ouça e confirme.",
+    selecao(CFG.vozURI, opcoesVoz, function(v){ CFG.vozURI = v; salvarCfg(); })));
+  add(linha("Preferir voz feminina", "Só vale quando a voz está em Automática.",
+    alternador(CFG.preferirVozFeminina, function(v){ CFG.preferirVozFeminina = v; salvarCfg(); })));
+  add(linha("Tom da voz", "Acima de 1 fica mais agudo, perto de voz de criança. Exagerar deixa metálico.",
+    deslizante(CFG.tomVoz, 0.8, 1.6, 0.05, "x", function(v){ CFG.tomVoz = v; salvarCfg(); })));
+  add(linha("Velocidade da fala", "",
+    deslizante(CFG.velocidadeFala, 0.5, 1.4, 0.05, "x", function(v){ CFG.velocidadeFala = v; salvarCfg(); })));
+  add(linha("Testar voz", "",
+    botao("Falar frase", "", function(){ falarTTS("Estou com sede"); })));
+
+  add(titulo("Áudio gravado"));
+  add(linha("Ajuste de altura da voz gravada", "Acima de 1 aproxima de voz infantil, mas acelera e distorce. 1 mantém o original.",
+    deslizante(CFG.ajusteTom, 1.0, 1.6, 0.05, "x", function(v){ CFG.ajusteTom = v; salvarCfg(); })));
+
+  const gradeM = document.createElement("div");
+  gradeM.className = "grade-midia";
+  add(gradeM);
+  for(const id in CARDS){
+    gradeM.appendChild(await itemMidia(id));
+  }
+
+  /* registro */
+  add(titulo("Registro de uso"));
+  const cont = document.createElement("span");
+  cont.className = "valor";
+  try{ cont.textContent = (await todos("log")).length + " linhas"; }catch(e){ cont.textContent = "-"; }
+  add(linha("Linhas guardadas", "Ficam só neste aparelho.", cont));
+  add(linha("Exportar", "Gera um arquivo CSV separado por ponto e vírgula, pronto para o R.",
+    botao("Baixar CSV", "primario", async function(){
+      const linhas = await todos("log");
+      if(!linhas.length){ aviso("Nada registrado ainda"); return; }
+      const blob = new Blob(["\ufeff"+paraCSV(linhas)], {type:"text/csv;charset=utf-8"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "liz_caa_" + new Date().toISOString().slice(0,10) + ".csv";
+      a.click();
+      setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+    })));
+  add(linha("Apagar registro", "Exporte antes. Não tem como desfazer.",
+    botao("Apagar tudo", "alerta", async function(){
+      if(!confirm("Apagar todo o registro de uso?")) return;
+      await limpar("log"); aviso("Registro apagado"); renderConfig();
+    })));
+
+  /* app */
+  add(titulo("Aplicativo"));
+  add(linha("Atualizar", "Busca a versão nova no servidor e recarrega.",
+    botao("Buscar atualização", "", async function(){
+      try{
+        const regs = await navigator.serviceWorker.getRegistrations();
+        for(const r of regs) await r.update();
+        aviso("Atualizando");
+        setTimeout(function(){ location.reload(true); }, 900);
+      }catch(e){ location.reload(true); }
+    })));
+  add(linha("Restaurar padrões", "Só as configurações. Gravações, fotos e registro continuam.",
+    botao("Restaurar", "alerta", function(){
+      if(!confirm("Restaurar as configurações padrão?")) return;
+      CFG = Object.assign({}, PADRAO);
+      salvarCfg(); renderConfig(); aviso("Configurações restauradas");
+    })));
+
+  /* sobre */
+  add(titulo("Sobre"));
+  const sobre = document.createElement("div");
+  sobre.style.cssText = "font-size:13.5px; color:#a8a8a8; line-height:1.65;";
+  sobre.innerHTML =
+      "<p style='margin:0 0 12px'><strong style='color:#fff; font-size:15px'>VerbaLiz</strong>, versão " + VERSAO_APP + "<br>"
+    + "Quem não fala também tem o que dizer.</p>"
+    + "<p style='margin:0 0 12px'>Nasceu para a Liz. Serve a quem precisar.</p>"
+    + "<p style='margin:0 0 12px'><strong style='color:#9fb4c9'>Autoria</strong><br>"
+    + "Copyright (c) 2026 Wanderson Kleber de Oliveira</p>"
+    + "<p style='margin:0 0 12px'><strong style='color:#9fb4c9'>Licença do código</strong><br>"
+    + "PolyForm Noncommercial License 1.0.0<br>"
+    + "polyformproject.org/licenses/noncommercial/1.0.0<br>"
+    + "Uso, modificação e redistribuição permitidos para fins não comerciais, "
+    + "mantendo a linha de autoria.</p>"
+    + "<p style='margin:0 0 12px'><strong style='color:#9fb4c9'>Licença do conteúdo</strong><br>"
+    + "Símbolos e vocabulário padrão: Creative Commons CC BY-NC-SA 4.0<br>"
+    + "creativecommons.org/licenses/by-nc-sa/4.0</p>"
+    + "<p style='margin:0 0 12px'><strong style='color:#9fb4c9'>Créditos de terceiros</strong><br>"
+    + CREDITOS_TERCEIROS + "</p>"
+    + "<p style='margin:0 0 12px'><strong style='color:#9fb4c9'>Seus dados</strong><br>"
+    + "Vozes, fotos, pranchas e registros criados neste aparelho são seus, "
+    + "ficam só aqui e não são enviados a lugar nenhum.</p>"
+    + "<p style='margin:0'>Código disponível para uso não comercial. "
+    + "Não é dispositivo médico e não substitui avaliação profissional.</p>";
+  add(sobre);
+}
+
+/* ---------- item de mídia por card ---------- */
+
+async function itemMidia(id){
+  const def = CARDS[id];
+  const d = document.createElement("div");
+  d.className = "item-midia";
+
+  const topo = document.createElement("div");
+  topo.className = "topo";
+  topo.innerHTML = '<span class="ic">'+simboloHTML(id, false)+"</span><strong>"+def.rotulo+"</strong>"
+    + (def.arasaac ? ' <span class="marca vazio">ARASAAC ' + def.arasaac + '</span>' : "");
+  d.appendChild(topo);
+
+  const temMsg   = !!(await urlMidia("audio:"+id+":msg"));
+  const temPista = !!(await urlMidia("audio:"+id+":pista"));
+  const temFoto  = !!(await urlMidia("foto:"+id));
+
+  const marca = document.createElement("div");
+  marca.className = "marca" + (temMsg || temPista || temFoto ? "" : " vazio");
+  marca.textContent = [
+    temMsg ? "mensagem gravada" : "mensagem: voz sintética",
+    temPista ? "pista gravada" : null,
+    temFoto ? "foto própria" : null
+  ].filter(Boolean).join("  ·  ");
+  d.appendChild(marca);
+
+  const acoes = document.createElement("div");
+  acoes.className = "acoes";
+
+  acoes.appendChild(botaoGravar(id, "msg", "mensagem"));
+  acoes.appendChild(botaoGravar(id, "pista", "pista"));
+  acoes.appendChild(botao("Ouvir", "", function(){ falarCard(id, "msg"); }));
+  if(temMsg) acoes.appendChild(botao("Apagar mensagem", "alerta", async function(){
+    await del("midia", "audio:"+id+":msg"); invalidarMidia("audio:"+id+":msg"); renderConfig();
+  }));
+  if(temPista) acoes.appendChild(botao("Apagar pista", "alerta", async function(){
+    await del("midia", "audio:"+id+":pista"); invalidarMidia("audio:"+id+":pista"); renderConfig();
+  }));
+
+  const inputFoto = document.createElement("input");
+  inputFoto.type = "file"; inputFoto.accept = "image/*"; inputFoto.style.display = "none";
+  inputFoto.addEventListener("change", async function(){
+    const f = inputFoto.files[0];
+    if(!f) return;
+    await put("midia", f, "foto:"+id);
+    invalidarMidia("foto:"+id);
+    aviso("Foto salva"); renderConfig();
+  });
+  d.appendChild(inputFoto);
+  acoes.appendChild(botao(temFoto ? "Trocar foto" : "Usar foto", "", function(){ inputFoto.click(); }));
+  if(temFoto) acoes.appendChild(botao("Voltar ao desenho", "alerta", async function(){
+    await del("midia", "foto:"+id); invalidarMidia("foto:"+id); renderConfig();
+  }));
+
+  d.appendChild(acoes);
+  return d;
+}
+
+let gravador = null, pedacos = [], gravandoChave = null;
+
+function botaoGravar(id, faixa, nome){
+  const chave = "audio:"+id+":"+faixa;
+  const b = botao(gravandoChave === chave ? "Parar gravação" : "Gravar "+nome,
+    gravandoChave === chave ? "alerta" : "primario", async function(){
+    if(gravandoChave === chave){ pararGravacao(); return; }
+    if(gravandoChave){ aviso("Pare a outra gravação primeiro"); return; }
+    try{
+      const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+      pedacos = [];
+      gravador = new MediaRecorder(stream);
+      gravador.ondataavailable = function(ev){ if(ev.data.size) pedacos.push(ev.data); };
+      gravador.onstop = async function(){
+        stream.getTracks().forEach(function(t){ t.stop(); });
+        const blob = new Blob(pedacos, {type: gravador.mimeType || "audio/webm"});
+        await put("midia", blob, chave);
+        invalidarMidia(chave);
+        gravandoChave = null; gravador = null;
+        aviso("Gravado"); renderConfig();
+      };
+      gravador.start();
+      gravandoChave = chave;
+      aviso("Gravando, toque de novo para parar");
+      renderConfig();
+    }catch(e){
+      aviso("Sem acesso ao microfone. Precisa de HTTPS e permissão.");
+    }
+  });
+  return b;
+}
+function pararGravacao(){
+  if(gravador && gravador.state !== "inactive") gravador.stop();
+}
+
+/* ============================================================
+   11. TELA CHEIA, TELA ACESA, SERVICE WORKER
+   ============================================================ */
+
+let wakeLock = null;
+async function manterTelaAcesa(){
+  try{
+    if("wakeLock" in navigator){
+      wakeLock = await navigator.wakeLock.request("screen");
+      wakeLock.addEventListener("release", function(){ wakeLock = null; });
+    }
+  }catch(e){}
+}
+document.addEventListener("visibilitychange", function(){
+  if(document.visibilityState === "visible" && !wakeLock) manterTelaAcesa();
+});
+
+/* abertura: o toque do adulto e o gesto que o navegador exige para
+   tela cheia, trava de orientacao e liberacao do audio */
+document.getElementById("comecar").addEventListener("click", async function(){
+  try{
+    if(document.documentElement.requestFullscreen && !document.fullscreenElement){
+      await document.documentElement.requestFullscreen();
+    }
+  }catch(e){}
+  try{
+    if(screen.orientation && screen.orientation.lock) await screen.orientation.lock("landscape");
+  }catch(e){}
+  try{
+    if(window.speechSynthesis){
+      const u = new SpeechSynthesisUtterance(" ");
+      u.volume = 0; speechSynthesis.speak(u);
+    }
+  }catch(e){}
+  manterTelaAcesa();
+  document.getElementById("abertura").classList.add("oculta");
+  document.getElementById("pranchas").classList.remove("oculta");
+});
+
+function abrirPrancha(nome){
+  document.getElementById("pranchas").classList.add("oculta");
+  telaAtual = nome; pagina = 0; modoConfirmacao = null;
+  travado = false; tUltimaAtivacao = -1e9;
+  registrar({tela:nome, card:"prancha", rotulo:nome, evento:"abriu_prancha_principal"});
+  desenhar();
+}
+document.getElementById("abrir-simnao").addEventListener("click", function(){ abrirPrancha("simnao"); });
+document.getElementById("abrir-menu").addEventListener("click", function(){ abrirPrancha("menu"); });
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load", function(){
+    navigator.serviceWorker.register("sw.js").catch(function(){});
+  });
+}
+
+/* ============================================================
+   12. INÍCIO
+   ============================================================ */
+
+aplicarTema();
+abrirDB().then(function(){
+  desenhar();
+}).catch(function(){
+  desenhar();
+});
+</script>
+</body>
+</html>

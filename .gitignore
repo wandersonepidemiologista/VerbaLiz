@@ -2,3 +2,11 @@
 node_modules/
 *.log
 .DS_Store
+
+# conteúdo pessoal da Liz: nunca vai para o repositório
+privado/
+Imagem_Liz*
+*_Liz.*
+
+# pacotes de atualização
+*.zip

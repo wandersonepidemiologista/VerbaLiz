@@ -141,6 +141,10 @@ Este é um projeto de **código disponível para uso não comercial**. Não é s
 
 **Não pode.** Vender, incluir em produto pago ou usar como parte de serviço comercial.
 
+### Avatar da Liz
+
+A imagem da página inicial, `public/avatar-liz.jpg`, é exceção às licenças acima: todos os direitos reservados, exibição autorizada apenas dentro do VerbaLiz. Quem adaptar o app para outra criança deve remover ou substituir esse arquivo. Pela configuração, qualquer família pode trocar a imagem no próprio aparelho, sem mexer no código.
+
 ### Símbolos de terceiros
 
 Os símbolos padrão são pictogramas oficiais do [ARASAAC](https://arasaac.org), incluídos sem modificação em `public/conteudo/arasaac/`, com a lista completa em `CREDITOS.md` na mesma pasta.

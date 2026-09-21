@@ -22,6 +22,7 @@
 <title>VerbaLiz</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icone-192.png">
+<link rel="apple-touch-icon" href="icone-512.png">
 <style>
   /* ---------- tema: todas as cores em variaveis ---------- */
   :root{
@@ -200,7 +201,16 @@
     gap:18px; padding:32px; text-align:center;
   }
   #abertura.oculta{display:none;}
-  #abertura h1{font-size:clamp(40px,8vw,84px); margin:0; color:var(--roxo); letter-spacing:.5px;}
+  .abertura-conteudo{
+    display:flex; align-items:center; justify-content:center; gap:5vw; flex-wrap:wrap;
+  }
+  .abertura-texto{display:flex; flex-direction:column; align-items:center; gap:14px;}
+  #logo-abertura{width:min(40vh, 340px); height:auto; display:block;}
+  .avatar{
+    width:min(52vh, 380px); aspect-ratio:1/1; object-fit:cover; border-radius:50%;
+    border:8px solid var(--turquesa); box-shadow:0 8px 28px rgba(103,84,130,.18);
+  }
+  .avatar.oculto{display:none;}
   #abertura .slogan{font-size:clamp(18px,2.6vw,26px); margin:0; max-width:34ch;}
   #abertura .apoio{font-size:15px; margin:0; color:var(--roxo); opacity:.8;}
   #abertura button{
@@ -324,12 +334,20 @@
 </div>
 
 <div id="abertura" class="adulto">
-  <h1>VerbaLiz</h1>
-  <p class="slogan">Quem não fala também tem o que dizer.</p>
-  <p class="apoio">O verbo na ponta do dedo.</p>
-  <button id="comecar">Começar</button>
-  <p class="dica">Toque do adulto. Liga tela cheia, trava na horizontal e libera o som.
-  Para abrir a configuração depois, segure 3 segundos no canto superior direito.</p>
+  <div class="abertura-conteudo">
+    <!-- avatar da Liz, publicado com autorização expressa do pai.
+         Não coberto pela CC BY-NC-SA: todos os direitos reservados (ver LICENSE-CONTEUDO.md).
+         Outra família pode trocar pela configuração; a troca fica só no aparelho dela. -->
+    <img id="avatar-abertura" class="avatar oculto" alt="Liz">
+    <div class="abertura-texto">
+      <img id="logo-abertura" src="logo-verbaliz.png" alt="VerbaLiz">
+      <p class="slogan">Quem não fala também tem o que dizer.</p>
+      <p class="apoio">O verbo na ponta do dedo.</p>
+      <button id="comecar">Começar</button>
+      <p class="dica">Toque do adulto. Liga tela cheia, trava na horizontal e libera o som.
+      Para abrir a configuração depois, segure 3 segundos no canto superior direito.</p>
+    </div>
+  </div>
 </div>
 
 <div id="config" class="adulto">
@@ -497,7 +515,7 @@ function itensDaPagina(nome, pagina){
    2. CONFIGURAÇÃO
    ============================================================ */
 
-const VERSAO_APP = "2.5";
+const VERSAO_APP = "2.8";
 /* Linha de apoio "O verbo na ponta do dedo": rever se o app ganhar acesso
    por acionador ou por olhar, porque deixa de descrever todos os usuarios. */
 
@@ -534,7 +552,8 @@ const PADRAO = {
   coresSimNao:"semantico",  // semantico (verde e vermelho) | paleta (turquesa e rosa)
   vaoCards:6,               // vao entre os dois cards, em % da largura
   bordaCard:12,             // px
-  simbolos:"arasaac",       // arasaac | simples
+  simbolos:"arasaac",
+  mostrarAvatar:true,       // imagem ao lado do logotipo na abertura       // arasaac | simples
   porPaginaMenu:4,          // cards por página numa prancha de categorias
   porPaginaEscolha:2,       // cards por página numa escolha
   homeToqueLongoMs:5000,    // botão do adulto: segurar este tempo para sair. 0 = toque simples
@@ -1409,6 +1428,32 @@ async function renderConfig(){
       await limpar("log"); aviso("Registro apagado"); renderConfig();
     })));
 
+  /* abertura */
+  add(titulo("Tela de abertura"));
+  const temAvatar = !!(await urlMidia("foto:abertura"));
+  const entradaAvatar = document.createElement("input");
+  entradaAvatar.type = "file"; entradaAvatar.accept = "image/*"; entradaAvatar.style.display = "none";
+  entradaAvatar.addEventListener("change", async function(){
+    const f = entradaAvatar.files[0];
+    if(!f) return;
+    await put("midia", f, "foto:abertura");
+    await carregarAvatar();
+    aviso("Imagem da abertura salva neste aparelho"); renderConfig();
+  });
+  elCorpo.appendChild(entradaAvatar);
+  const acoesAvatar = document.createElement("div");
+  acoesAvatar.style.display = "flex"; acoesAvatar.style.gap = "8px";
+  acoesAvatar.appendChild(botao(temAvatar ? "Trocar imagem" : "Usar outra imagem", "primario",
+    function(){ entradaAvatar.click(); }));
+  if(temAvatar) acoesAvatar.appendChild(botao("Voltar ao avatar da Liz", "alerta", async function(){
+    await del("midia", "foto:abertura"); await carregarAvatar(); renderConfig();
+  }));
+  add(linha("Imagem na página inicial",
+    "Padrão: o avatar da Liz, que vem com o app. Uma imagem escolhida aqui substitui o avatar só neste aparelho e não vai para o servidor.",
+    acoesAvatar));
+  add(linha("Mostrar imagem na página inicial", "Desligado, a abertura mostra só o logotipo.",
+    alternador(CFG.mostrarAvatar, function(v){ CFG.mostrarAvatar = v; salvarCfg(); carregarAvatar(); })));
+
   /* app */
   add(titulo("Aplicativo"));
   add(linha("Atualizar", "Busca a versão nova no servidor e recarrega.",
@@ -1607,8 +1652,22 @@ if("serviceWorker" in navigator){
    12. INÍCIO
    ============================================================ */
 
+/* imagem da abertura: a carregada no aparelho tem prioridade;
+   sem ela, o avatar da Liz que vem com o app */
+async function carregarAvatar(){
+  const el = document.getElementById("avatar-abertura");
+  if(!CFG.mostrarAvatar){ el.classList.add("oculto"); return; }
+  invalidarMidia("foto:abertura");
+  let url = null;
+  try{ url = await urlMidia("foto:abertura"); }catch(e){}
+  el.src = url || "avatar-liz.jpg";
+  el.alt = url ? "" : "Liz";
+  el.classList.remove("oculto");
+}
+
 aplicarTema();
 abrirDB().then(function(){
+  carregarAvatar();
   desenhar();
 }).catch(function(){
   desenhar();

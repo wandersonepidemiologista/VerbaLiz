@@ -14,7 +14,7 @@ Em caso de divergência entre este arquivo e o texto publicado pela Creative Com
 ## O que é conteúdo, neste repositório
 
 - os desenhos dos símbolos, escritos em SVG dentro da função `icone()` em `public/index.html`
-- os ícones do aplicativo, `public/icone-192.png` e `public/icone-512.png`
+- o logotipo VerbaLiz e os ícones do aplicativo, `public/logo-verbaliz.png`, `public/icone-192.png`, `public/icone-512.png` e `public/icone-maskable-512.png`
 - os pictogramas ARASAAC em `public/conteudo/arasaac/`, de terceiros, listados em `CREDITOS.md` na mesma pasta
 - o vocabulário padrão, ou seja, rótulos e frases dos objetos `CARDS` e `TELAS` em `public/index.html`
 - `README.md` e demais documentos
@@ -25,6 +25,14 @@ Todo o resto é código e segue a PolyForm Noncommercial License 1.0.0, no arqui
 
 > VerbaLiz, de Wanderson Kleber de Oliveira. Conteúdo sob CC BY-NC-SA 4.0.
 > https://github.com/wandersonepidemiologista/VerbaLiz
+
+## Exceção: avatar da Liz
+
+O arquivo `public/avatar-liz.jpg` **não** está licenciado sob CC BY-NC-SA nem sob nenhuma outra licença deste repositório.
+
+Copyright (c) 2026 Wanderson Kleber de Oliveira. Todos os direitos reservados.
+
+A imagem é publicada com autorização expressa dos pais, exclusivamente para exibição dentro do aplicativo VerbaLiz, sem modificação. Não é permitido copiar, modificar, redistribuir ou usar a imagem fora do aplicativo, nem em versões adaptadas dele. Quem redistribuir o VerbaLiz deve remover este arquivo ou substituí-lo por imagem própria.
 
 ## Conteúdo de terceiros
 

@@ -1,9 +1,8 @@
 /* Service worker: cache versionado.
    Ao publicar uma versao nova, troque VERSAO. */
-const VERSAO = "verbaliz-v13";
+const VERSAO = "verbaliz-v14";
 const ARQUIVOS = [
   "./",
-  "./index.html",
   "./manifest.webmanifest",
   "./icone-192.png",
   "./icone-512.png",
@@ -81,16 +80,28 @@ self.addEventListener("activate", function(ev){
 
 self.addEventListener("fetch", function(ev){
   if(ev.request.method !== "GET") return;
+
+  /* abrir o app: sempre a página raiz guardada no cache.
+     Nunca guardar nem servir resposta redirecionada, que o Chrome recusa. */
+  if(ev.request.mode === "navigate"){
+    ev.respondWith(
+      caches.match("./").then(function(cacheado){
+        return cacheado || fetch(ev.request);
+      }).catch(function(){ return caches.match("./"); })
+    );
+    return;
+  }
+
   ev.respondWith(
     caches.match(ev.request).then(function(cacheado){
       if(cacheado) return cacheado;
       return fetch(ev.request).then(function(resp){
-        if(resp && resp.status === 200 && resp.type === "basic"){
+        if(resp && resp.status === 200 && resp.type === "basic" && !resp.redirected){
           const copia = resp.clone();
           caches.open(VERSAO).then(function(c){ c.put(ev.request, copia); });
         }
         return resp;
-      }).catch(function(){ return caches.match("./index.html"); });
+      });
     })
   );
 });

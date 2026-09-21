@@ -1,8 +1,9 @@
 {
+  "id": "/",
   "name": "VerbaLiz",
   "short_name": "VerbaLiz",
   "description": "Comunicação alternativa em português, gratuita e de uso não comercial, para crianças que não falam.",
-  "start_url": "./index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "landscape",

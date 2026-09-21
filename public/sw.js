@@ -1,6 +1,6 @@
 /* Service worker: cache versionado.
    Ao publicar uma versao nova, troque VERSAO. */
-const VERSAO = "verbaliz-v9";
+const VERSAO = "verbaliz-v10";
 const ARQUIVOS = [
   "./",
   "./index.html",

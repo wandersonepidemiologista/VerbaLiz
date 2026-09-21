@@ -211,6 +211,7 @@
     border:8px solid var(--turquesa); box-shadow:0 8px 28px rgba(103,84,130,.18);
   }
   .avatar.oculto{display:none;}
+  .avatar-pequeno{width:min(26vh, 190px); border-width:6px;}
   #abertura .slogan{font-size:clamp(18px,2.6vw,26px); margin:0; max-width:34ch;}
   #abertura .apoio{font-size:15px; margin:0; color:var(--roxo); opacity:.8;}
   #abertura button{
@@ -319,6 +320,7 @@
 <div id="girar">Gire o tablet para a posição deitada.</div>
 
 <div id="pranchas" class="adulto oculta">
+  <img id="avatar-pranchas" class="avatar avatar-pequeno oculto" alt="Liz">
   <h1>Qual prancha?</h1>
   <div class="escolha-prancha">
     <button id="abrir-simnao">
@@ -515,7 +517,7 @@ function itensDaPagina(nome, pagina){
    2. CONFIGURAÇÃO
    ============================================================ */
 
-const VERSAO_APP = "2.9";
+const VERSAO_APP = "3.0";
 /* Linha de apoio "O verbo na ponta do dedo": rever se o app ganhar acesso
    por acionador ou por olhar, porque deixa de descrever todos os usuarios. */
 
@@ -556,7 +558,7 @@ const PADRAO = {
   mostrarAvatar:true,       // imagem ao lado do logotipo na abertura       // arasaac | simples
   porPaginaMenu:4,          // cards por página numa prancha de categorias
   porPaginaEscolha:2,       // cards por página numa escolha
-  homeToqueLongoMs:5000,    // botão do adulto: segurar este tempo para sair. 0 = toque simples
+  homeToqueLongoMs:2000,    // botão do adulto: segurar este tempo para sair. 0 = toque simples
   homeNaPranchaSimNao:true,
   destaqueMs:1600,          // tempo que a escolha fica destacada antes de seguir
   travaAposAcaoMs:1200,     // toque ignorado depois que a fala e o destaque terminam
@@ -576,6 +578,11 @@ function aplicarTema(){
   r.setProperty("--borda-card", CFG.bordaCard + "px");
   document.body.dataset.simnao = CFG.coresSimNao;
 }
+
+/* ajustes de padrão entre versões, aplicados uma vez sobre a configuração salva */
+(function migrar(){
+  if(CFG.homeToqueLongoMs === 5000){ CFG.homeToqueLongoMs = 2000; }
+})();
 
 function salvarCfg(){
   try{ localStorage.setItem("liz_cfg", JSON.stringify(CFG)); }catch(e){}
@@ -1318,7 +1325,7 @@ async function renderConfig(){
   add(linha("Cards por página nas escolhas", "Duas opções é o padrão, pela dificuldade motora.",
     selecao(String(CFG.porPaginaEscolha), [["2","2"],["4","4"]],
       function(v){ CFG.porPaginaEscolha = parseInt(v,10); pagina = 0; salvarCfg(); })));
-  add(linha("Tempo para segurar o botão de sair", "O botão no canto superior esquerdo é do adulto e leva à escolha de prancha. Segurar por 5 segundos evita que a criança saia sem querer. 0 vira toque simples.",
+  add(linha("Tempo para segurar o botão de sair", "O botão no canto superior esquerdo é do adulto e leva à escolha de prancha. Segurar por 2 segundos evita que a criança saia sem querer. 0 vira toque simples.",
     deslizante(CFG.homeToqueLongoMs, 0, 8000, 500, " ms", function(v){ CFG.homeToqueLongoMs = v; salvarCfg(); })));
   add(linha("Mostrar o botão de sair na prancha Sim e Não", "Desligado, a prancha de resposta fica sem nenhum outro alvo na tela.",
     alternador(CFG.homeNaPranchaSimNao, function(v){ CFG.homeNaPranchaSimNao = v; salvarCfg(); })));
@@ -1655,14 +1662,16 @@ if("serviceWorker" in navigator){
 /* imagem da abertura: a carregada no aparelho tem prioridade;
    sem ela, o avatar da Liz que vem com o app */
 async function carregarAvatar(){
-  const el = document.getElementById("avatar-abertura");
-  if(!CFG.mostrarAvatar){ el.classList.add("oculto"); return; }
+  const els = [document.getElementById("avatar-abertura"), document.getElementById("avatar-pranchas")];
+  if(!CFG.mostrarAvatar){ els.forEach(function(el){ el.classList.add("oculto"); }); return; }
   invalidarMidia("foto:abertura");
   let url = null;
   try{ url = await urlMidia("foto:abertura"); }catch(e){}
-  el.src = url || "avatar-liz.jpg";
-  el.alt = url ? "" : "Liz";
-  el.classList.remove("oculto");
+  els.forEach(function(el){
+    el.src = url || "avatar-liz.jpg";
+    el.alt = url ? "" : "Liz";
+    el.classList.remove("oculto");
+  });
 }
 
 aplicarTema();

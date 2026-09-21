@@ -1,6 +1,6 @@
 /* Service worker: cache versionado.
    Ao publicar uma versao nova, troque VERSAO. */
-const VERSAO = "verbaliz-v14";
+const VERSAO = "verbaliz-v15";
 const ARQUIVOS = [
   "./",
   "./manifest.webmanifest",

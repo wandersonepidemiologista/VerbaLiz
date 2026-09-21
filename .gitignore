@@ -10,3 +10,6 @@ Imagem_Liz*
 
 # pacotes de atualização
 *.zip
+
+# prévias de tela, nunca publicar
+previa-*

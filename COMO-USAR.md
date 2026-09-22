@@ -6,7 +6,7 @@ O VerbaLiz é um aplicativo gratuito de comunicação alternativa em português,
 
 A explicação completa de uso e de cada ajuste da configuração está em <https://www.verbaliz.com.br/ajuda/>.
 
-Endereço: **https://verbaliz.pages.dev**
+Endereço: **https://www.verbaliz.com.br**
 
 Este guia explica em quais aparelhos ele funciona, como instalar e, principalmente, o que ele ainda não faz. Leia antes de apresentar à criança.
 
@@ -40,7 +40,7 @@ Precisa de navegador atualizado: Chrome no Android, Safari no iPad e iPhone.
 ### Tablet ou celular Android
 
 1. Antes de tudo, baixe a voz em português para funcionar sem internet: Configurações do Android, Sistema, Idiomas e entrada, Saída de conversão de texto em voz, engrenagem do mecanismo do Google, Instalar dados de voz, Português (Brasil).
-2. Abra **https://verbaliz.pages.dev** no Chrome.
+2. Abra **https://www.verbaliz.com.br** no Chrome.
 3. Toque no menu de três pontos e escolha **Instalar app** ou **Adicionar à tela inicial**.
 4. Abra pelo ícone criado.
 5. Teste com o modo avião ligado. Se abrir, está pronto para usar sem internet.
@@ -48,7 +48,7 @@ Precisa de navegador atualizado: Chrome no Android, Safari no iPad e iPhone.
 
 ### iPad ou iPhone
 
-1. Abra **https://verbaliz.pages.dev** no Safari.
+1. Abra **https://www.verbaliz.com.br** no Safari.
 2. Toque em **Compartilhar** e depois em **Adicionar à Tela de Início**.
 3. Abra pelo ícone criado.
 4. Deixe o aparelho deitado e trave a rotação pela Central de Controle. O iOS não permite que o app faça isso sozinho.

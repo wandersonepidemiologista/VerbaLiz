@@ -560,7 +560,7 @@ function itensDaPagina(nome, pagina){
    2. CONFIGURAÇÃO
    ============================================================ */
 
-const VERSAO_APP = "3.4.1";
+const VERSAO_APP = "3.5";
 /* Linha de apoio "O verbo na ponta do dedo": rever se o app ganhar acesso
    por acionador ou por olhar, porque deixa de descrever todos os usuarios. */
 
@@ -573,20 +573,20 @@ const CREDITOS_TERCEIROS = "Pictogramas: autor Sergio Palao. Origem: ARASAAC (ar
 const PADRAO = {
   ativacao:"soltar",        // encostar | soltar | permanencia
   permanenciaMs:600,
-  debounceMs:1200,
+  debounceMs:500,
   raioPalma:0,              // 0 desliga o filtro; valor em px do raio do toque
   alturaIcone:60,           // % da altura do card
   mostrarRotulo:true,
   tamanhoRotulo:42,
-  estiloCard:"contorno",    // contorno | preenchido
+  estiloCard:"preenchido",  // contorno | preenchido
   confirmar:true,
   perguntarEmVoz:true,
   modoModelagem:false,
   mostrarFaixa:false,
-  velocidadeFala:0.85,
+  velocidadeFala:1.0,
   vozURI:"",
   preferirVozFeminina:true,
-  tomVoz:1.15,              // acima de 1 deixa a voz mais aguda, perto de voz infantil
+  tomVoz:1.6,               // acima de 1 deixa a voz mais aguda, perto de voz infantil
   ajusteTom:1.0,
   segurarRetornoMs:3000,
   ajuda:"nenhuma",          // nenhuma | verbal | fisica
@@ -600,12 +600,12 @@ const PADRAO = {
   simbolos:"arasaac",
   porPaginaMenu:2,          // cards por página numa prancha de categorias
   porPaginaEscolha:2,       // cards por página numa escolha
-  homeToqueLongoMs:2000,    // botão do adulto: segurar este tempo para sair. 0 = toque simples
+  homeToqueLongoMs:1000,    // botão do adulto: segurar este tempo para sair. 0 = toque simples
   homeNaPranchaSimNao:true,
-  destaqueMs:800,           // tempo que a escolha fica destacada antes de seguir
-  travaAposAcaoMs:500,      // toque ignorado depois que a fala e o destaque terminam
+  destaqueMs:500,           // tempo que a escolha fica destacada antes de seguir
+  travaAposAcaoMs:400,      // toque ignorado depois que a fala e o destaque terminam
   esperarFalaTerminar:true, // só segue depois que o app terminou de falar
-  cfgVersao:2
+  cfgVersao:3
 };
 
 let CFG = Object.assign({}, PADRAO);
@@ -614,9 +614,12 @@ try{
   if(salvo){
     const antigo = JSON.parse(salvo);
     if(!antigo.cfgVersao || antigo.cfgVersao < 2){
-      ["debounceMs","segurarRetornoMs","porPaginaMenu","destaqueMs","travaAposAcaoMs"]
-        .forEach(function(k){ delete antigo[k]; });
-      antigo.cfgVersao = 2;
+      ["segurarRetornoMs","porPaginaMenu"].forEach(function(k){ delete antigo[k]; });
+    }
+    if(!antigo.cfgVersao || antigo.cfgVersao < 3){
+      ["debounceMs","destaqueMs","travaAposAcaoMs","homeToqueLongoMs","estiloCard",
+       "velocidadeFala","tomVoz","mostrarFaixa","ajuda"].forEach(function(k){ delete antigo[k]; });
+      antigo.cfgVersao = 3;
     }
     CFG = Object.assign({}, PADRAO, antigo);
     localStorage.setItem("liz_cfg", JSON.stringify(CFG));
@@ -1288,7 +1291,10 @@ elVoltar.addEventListener("click", function(){
     if(t){ clearTimeout(t); t = null; }
     if(jaAcionou) return;
     if(CFG.homeToqueLongoMs === 0) acionarHome();
-    else aviso("Segure " + Math.round(CFG.homeToqueLongoMs/1000) + " segundos para sair");
+    else{
+      const seg = Math.max(1, Math.round(CFG.homeToqueLongoMs/1000));
+      aviso("Segure " + seg + (seg === 1 ? " segundo" : " segundos") + " para sair");
+    }
   });
 
   elHome.addEventListener("pointercancel", function(){
@@ -1430,7 +1436,7 @@ async function renderConfig(){
   add(linha("Cards por página nas escolhas", "Duas opções é o padrão, pela dificuldade motora.",
     selecao(String(CFG.porPaginaEscolha), [["2","2"],["4","4"]],
       function(v){ CFG.porPaginaEscolha = parseInt(v,10); pagina = 0; salvarCfg(); })));
-  add(linha("Tempo para segurar o botão de sair", "O botão no canto superior esquerdo é do adulto e leva à escolha de prancha. Segurar por 2 segundos evita que a criança saia sem querer. 0 vira toque simples.",
+  add(linha("Tempo para segurar o botão de sair", "O botão no canto superior esquerdo é do adulto e leva à escolha de prancha. Segurar por 1 segundo evita que a criança saia sem querer. 0 vira toque simples.",
     deslizante(CFG.homeToqueLongoMs, 0, 8000, 500, " ms", function(v){ CFG.homeToqueLongoMs = v; salvarCfg(); })));
   add(linha("Mostrar o botão de sair na prancha Sim e Não", "Desligado, a prancha de resposta fica sem nenhum outro alvo na tela.",
     alternador(CFG.homeNaPranchaSimNao, function(v){ CFG.homeNaPranchaSimNao = v; salvarCfg(); })));

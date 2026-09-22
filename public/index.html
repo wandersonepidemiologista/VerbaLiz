@@ -248,7 +248,7 @@
   .escolha-prancha button span{font-size:14px; line-height:1.45;}
   #pranchas .dica{font-size:13px; opacity:.72; margin:0;}
 
-  #config{position:fixed; inset:0; z-index:100; display:none; flex-direction:column;}
+  #config{position:fixed; inset:0; z-index:170; display:none; flex-direction:column;}
   #config.ativo{display:flex;}
   #config header{
     display:flex; align-items:center; justify-content:space-between;
@@ -536,7 +536,7 @@ function itensDaPagina(nome, pagina){
    2. CONFIGURAÇÃO
    ============================================================ */
 
-const VERSAO_APP = "3.2.1";
+const VERSAO_APP = "3.3";
 /* Linha de apoio "O verbo na ponta do dedo": rever se o app ganhar acesso
    por acionador ou por olhar, porque deixa de descrever todos os usuarios. */
 
@@ -549,7 +549,7 @@ const CREDITOS_TERCEIROS = "Pictogramas: autor Sergio Palao. Origem: ARASAAC (ar
 const PADRAO = {
   ativacao:"soltar",        // encostar | soltar | permanencia
   permanenciaMs:600,
-  debounceMs:2500,
+  debounceMs:1200,
   raioPalma:0,              // 0 desliga o filtro; valor em px do raio do toque
   alturaIcone:60,           // % da altura do card
   mostrarRotulo:true,
@@ -564,7 +564,7 @@ const PADRAO = {
   preferirVozFeminina:true,
   tomVoz:1.15,              // acima de 1 deixa a voz mais aguda, perto de voz infantil
   ajusteTom:1.0,
-  segurarRetornoMs:4000,
+  segurarRetornoMs:3000,
   ajuda:"nenhuma",          // nenhuma | verbal | fisica
   alerta:"alerta",          // alerta | intermediario | sonolenta
   mostrarPergunta:true,     // terceiro card acima dos alvos
@@ -575,19 +575,29 @@ const PADRAO = {
   bordaCard:12,             // px
   simbolos:"arasaac",
   mostrarAvatar:true,       // imagem ao lado do logotipo na abertura       // arasaac | simples
-  porPaginaMenu:4,          // cards por página numa prancha de categorias
+  porPaginaMenu:2,          // cards por página numa prancha de categorias
   porPaginaEscolha:2,       // cards por página numa escolha
   homeToqueLongoMs:2000,    // botão do adulto: segurar este tempo para sair. 0 = toque simples
   homeNaPranchaSimNao:true,
-  destaqueMs:1600,          // tempo que a escolha fica destacada antes de seguir
-  travaAposAcaoMs:1200,     // toque ignorado depois que a fala e o destaque terminam
-  esperarFalaTerminar:true  // só segue depois que o app terminou de falar
+  destaqueMs:800,           // tempo que a escolha fica destacada antes de seguir
+  travaAposAcaoMs:500,      // toque ignorado depois que a fala e o destaque terminam
+  esperarFalaTerminar:true, // só segue depois que o app terminou de falar
+  cfgVersao:2
 };
 
 let CFG = Object.assign({}, PADRAO);
 try{
   const salvo = localStorage.getItem("liz_cfg");
-  if(salvo) CFG = Object.assign({}, PADRAO, JSON.parse(salvo));
+  if(salvo){
+    const antigo = JSON.parse(salvo);
+    if(!antigo.cfgVersao || antigo.cfgVersao < 2){
+      ["debounceMs","segurarRetornoMs","porPaginaMenu","destaqueMs","travaAposAcaoMs"]
+        .forEach(function(k){ delete antigo[k]; });
+      antigo.cfgVersao = 2;
+    }
+    CFG = Object.assign({}, PADRAO, antigo);
+    localStorage.setItem("liz_cfg", JSON.stringify(CFG));
+  }
 }catch(e){}
 
 function aplicarTema(){
@@ -844,6 +854,7 @@ function interromper(){
   try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
   try{ if(audioAtual){ audioAtual.pause(); audioAtual = null; } }catch(e){}
   elRetorno.classList.remove("ativo");
+  entregaAtual = null;
 }
 
 function aviso(txt){
@@ -1047,14 +1058,14 @@ function ligarToque(el, id){
 
 /* ---------- resposta a uma escolha ---------- */
 
-async function responderEscolha(id, falarAgora){
+async function responderEscolha(id, falarAgora, destaque){
   travado = true;
   elGrade.querySelectorAll(".card").forEach(function(c){
     c.classList.add(c.dataset.card === id ? "escolhido" : "apagado");
   });
   const fala = falarAgora ? falarCard(id) : Promise.resolve();
   if(CFG.esperarFalaTerminar) await fala;
-  await espera(CFG.destaqueMs);
+  await espera(destaque === undefined ? CFG.destaqueMs : destaque);
 }
 
 function destravar(){
@@ -1085,7 +1096,8 @@ async function acionar(id, latencia, duracao){
     registrar({tela:"confirmacao", card:alvo, rotulo:CARDS[alvo].rotulo,
                evento: id === "sim" ? "confirmado_sim" : "confirmado_nao",
                latencia_ms:latencia, duracao_toque_ms:duracao});
-    await responderEscolha(id, true);
+    if(id === "sim") await responderEscolha(id, false, 250);
+    else await responderEscolha(id, true);
     if(cancelado()) return;
     modoConfirmacao = null;
     if(id === "sim"){
@@ -1126,6 +1138,22 @@ async function acionar(id, latencia, duracao){
   }
 }
 
+/* reforço: "Sim, quero queijo!". Com voz gravada, toca o Sim gravado
+   (ou sintetizado) e em seguida a mensagem gravada do card. */
+function minuscula(t){ return t ? t.charAt(0).toLowerCase() + t.slice(1) : ""; }
+async function falarReforco(id){
+  const url = await urlMidia("audio:"+id+":msg");
+  if(url){
+    const urlSim = await urlMidia("audio:sim:msg");
+    if(urlSim) await tocarBlobURL(urlSim, CFG.ajusteTom); else await falarTTS("Sim");
+    await tocarBlobURL(url, CFG.ajusteTom);
+    return;
+  }
+  await falarTTS("Sim, " + minuscula(CARDS[id] ? CARDS[id].fala : "") + "!");
+}
+
+let entregaAtual = null;   // {id, falando, fim}: tela de entrega aberta
+
 async function entregarMensagem(id){
   const def = CARDS[id];
   const meuSeq = seqNav;
@@ -1134,15 +1162,34 @@ async function entregarMensagem(id){
   elRetorno.classList.add("ativo");
   registrar({tela:"entrega", card:id, rotulo:def.rotulo, evento:"mensagem_entregue"});
   travado = true;
-  await falarCard(id, "msg");
+  entregaAtual = {id:id, falando:true, fim:0};
+  await falarReforco(id);
   if(meuSeq !== seqNav) return;
-  await espera(CFG.segurarRetornoMs);
-  if(meuSeq !== seqNav) return;
+  entregaAtual.falando = false; entregaAtual.fim = performance.now();
+
+  /* fica na tela até passar o tempo configurado depois da última fala;
+     cada toque na figura repete o reforço e recomeça a contagem */
+  while(true){
+    await espera(150);
+    if(meuSeq !== seqNav) return;
+    if(entregaAtual && !entregaAtual.falando &&
+       performance.now() - entregaAtual.fim >= CFG.segurarRetornoMs) break;
+  }
+  entregaAtual = null;
   elRetorno.classList.remove("ativo");
   telaAtual = "menu"; pagina = 0; modoConfirmacao = null;
   await desenhar();
   destravar();
 }
+
+elRetorno.addEventListener("pointerup", async function(){
+  const e = entregaAtual;
+  if(!e || e.falando) return;
+  if(performance.now() - e.fim < 400) return;     // ignora toque repetido colado ao fim da fala
+  e.falando = true;
+  registrar({tela:"entrega", card:e.id, rotulo:CARDS[e.id].rotulo, evento:"repetiu_reforco"});
+  try{ await falarReforco(e.id); }finally{ e.falando = false; e.fim = performance.now(); }
+});
 
 /* ---------- navegação de nível ---------- */
 
@@ -1381,7 +1428,7 @@ async function renderConfig(){
     alternador(CFG.mostrarRotulo, function(v){ CFG.mostrarRotulo = v; salvarCfg(); })));
   add(linha("Tamanho do rótulo", "",
     deslizante(CFG.tamanhoRotulo, 20, 88, 2, " px", function(v){ CFG.tamanhoRotulo = v; salvarCfg(); })));
-  add(linha("Tempo da tela de entrega", "Quanto tempo a mensagem fica na tela depois de confirmada.",
+  add(linha("Tempo da tela de entrega", "Quanto tempo a figura fica na tela depois da última fala. Cada toque na figura repete a frase e recomeça a contagem.",
     deslizante(CFG.segurarRetornoMs, 800, 8000, 200, " ms", function(v){ CFG.segurarRetornoMs = v; salvarCfg(); })));
 
   /* fluxo */

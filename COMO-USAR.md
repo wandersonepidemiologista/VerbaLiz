@@ -64,7 +64,7 @@ Precisa de navegador atualizado: Chrome no Android, Safari no iPad e iPhone.
 - Troca de qualquer figura por uma foto real, tirada no próprio aparelho
 - Registro de uso em planilha, para acompanhar a evolução
 
-A configuração fica escondida de propósito: segure o dedo por 3 segundos no canto superior direito da tela.
+Na tela **Qual prancha?**, toque em **Configuração**, no menu do topo. Dentro das pranchas, a configuração fica escondida de propósito: segure o dedo por 3 segundos no canto superior direito da tela.
 
 ## Limitações que você precisa conhecer
 

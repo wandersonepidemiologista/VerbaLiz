@@ -60,7 +60,7 @@ Antes de cada mensagem ser falada aparece a confirmação: **Sim** à esquerda, 
 
 ## Configuração
 
-Toque longo de 3 segundos no canto superior direito. Não existe botão visível, de propósito.
+Na tela Qual prancha, botão **Configuração** no menu do topo. Dentro das pranchas, toque longo de 3 segundos no canto superior direito; ali não existe botão visível, de propósito.
 
 O que dá para ajustar sem mexer no código:
 

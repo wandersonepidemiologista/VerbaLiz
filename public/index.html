@@ -230,11 +230,13 @@
     position:absolute; top:14px; left:0; right:0;
     display:flex; justify-content:center; gap:6px; flex-wrap:wrap;
   }
-  .links-site a{
-    color:var(--texto-adulto); text-decoration:none; font-size:15px;
-    padding:7px 14px; border-radius:10px; border:1px solid transparent;
+  .links-site a, .links-site button{
+    color:var(--texto-adulto); text-decoration:none; font-size:15px; font-family:inherit;
+    padding:7px 14px; border-radius:10px; border:1px solid transparent; background:none; cursor:pointer;
   }
-  .links-site a:hover, .links-site a:focus{border-color:var(--lilas-claro); background:#fff;}
+  .links-site a:hover, .links-site a:focus,
+  .links-site button:hover, .links-site button:focus{border-color:var(--lilas-claro); background:#fff;}
+  .links-site #link-config{border-color:var(--lilas-claro); color:var(--roxo); font-weight:600;}
   #pranchas h1{font-size:clamp(26px,4vw,40px); margin:0; color:var(--roxo);}
   .escolha-prancha{display:flex; gap:22px; flex-wrap:wrap; justify-content:center;}
   .escolha-prancha button{
@@ -335,6 +337,7 @@
     <a href="licenciamento/">Licenciamento</a>
     <a href="participe/">Participe</a>
     <a href="quem-ajuda/">Quem ajuda</a>
+    <button type="button" id="link-config">Configuração</button>
   </nav>
   <img id="avatar-pranchas" class="avatar avatar-pequeno oculto" alt="Ilustração da Liz: menina de pele clara, cabelos castanhos de comprimento médio, levemente ondulados e divididos de lado, óculos de armação rosa com detalhe azul-claro nas hastes, camiseta branca, olhar atento e curioso voltado para cima e para o lado.">
   <h1>Qual prancha?</h1>
@@ -348,7 +351,7 @@
       <span>Quero, Sinto, Fazer, Chamar, com atalhos para mais, dor e fralda.</span>
     </button>
   </div>
-  <p class="dica">Segure 3 segundos no canto superior direito para abrir a configuração.</p>
+  <p class="dica">Dentro das pranchas, a configuração abre segurando 3 segundos no canto superior direito.</p>
 </div>
 
 <div id="abertura" class="adulto">
@@ -363,7 +366,7 @@
       <p class="apoio">O verbo na ponta do dedo.</p>
       <button id="comecar">Começar</button>
       <p class="dica">Toque do adulto. Liga tela cheia, trava na horizontal e libera o som.
-      Para abrir a configuração depois, segure 3 segundos no canto superior direito.</p>
+      A configuração fica no menu da próxima tela.</p>
     </div>
   </div>
 </div>
@@ -533,7 +536,7 @@ function itensDaPagina(nome, pagina){
    2. CONFIGURAÇÃO
    ============================================================ */
 
-const VERSAO_APP = "3.2";
+const VERSAO_APP = "3.2.1";
 /* Linha de apoio "O verbo na ponta do dedo": rever se o app ganhar acesso
    por acionador ou por olhar, porque deixa de descrever todos os usuarios. */
 
@@ -1255,6 +1258,7 @@ function abrirConfig(){
   elConfig.classList.add("ativo");
   renderConfig();
 }
+document.getElementById("link-config").addEventListener("click", abrirConfig);
 
 function linha(titulo, ajudaTxt, controle){
   const d = document.createElement("div");

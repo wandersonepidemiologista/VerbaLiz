@@ -203,12 +203,14 @@
 
   #abertura{
     position:fixed; inset:0; z-index:150;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
     gap:18px; padding:32px; text-align:center;
+    overflow-y:auto; -webkit-overflow-scrolling:touch;
   }
   #abertura.oculta{display:none;}
   .abertura-conteudo{
     display:flex; align-items:center; justify-content:center; gap:5vw; flex-wrap:wrap;
+    margin:auto 0; /* centraliza quando cabe; quando nao cabe, rola sem cortar o topo */
   }
   .abertura-texto{display:flex; flex-direction:column; align-items:center; gap:14px;}
   #logo-abertura{width:min(40vh, 340px); height:auto; display:block;}
@@ -231,13 +233,14 @@
 
   #pranchas{
     position:fixed; inset:0; z-index:140;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    gap:22px; padding:30px; text-align:center;
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+    gap:22px; padding:14px 30px 30px; text-align:center;
+    overflow-y:auto; -webkit-overflow-scrolling:touch;
   }
+  #pranchas > .dupla{margin-top:auto;}
   #pranchas.oculta{display:none;}
   .links-site{
-    position:absolute; top:14px; left:0; right:0;
-    display:flex; justify-content:center; gap:6px; flex-wrap:wrap;
+    display:flex; justify-content:center; gap:6px; flex-wrap:wrap; flex-shrink:0;
   }
   .links-site a, .links-site button{
     color:var(--texto-adulto); text-decoration:none; font-size:15px; font-family:inherit;
@@ -255,7 +258,7 @@
   }
   .escolha-prancha button strong{font-size:22px; color:var(--roxo);}
   .escolha-prancha button span{font-size:14px; line-height:1.45;}
-  #pranchas .dica{font-size:13px; opacity:.72; margin:0;}
+  #pranchas .dica{font-size:13px; opacity:.72; margin:0 0 auto;}
 
   #config{position:fixed; inset:0; z-index:170; display:none; flex-direction:column;}
   #config.ativo{display:flex;}
@@ -314,6 +317,48 @@
     max-width:86vw; text-align:center;
   }
   #aviso.ativo{opacity:1;}
+  /* celular em pe: avatar e logo menores para o botao Comecar aparecer sem rolar */
+  @media (orientation:portrait) and (max-width:600px){
+    #abertura{padding:18px 16px; gap:10px;}
+    .abertura-conteudo{flex-direction:column; gap:10px;}
+    .abertura-texto{gap:8px;}
+    .avatar{width:min(24vh, 46vw, 200px); border-width:6px;}
+    .dupla.com-coleguinha .avatar:not(.avatar-pequeno){width:min(20vh, 38vw, 160px);}
+    #logo-abertura{width:min(19vh, 56vw, 220px);}
+    #abertura .slogan{font-size:17px;}
+    #abertura .apoio{font-size:14px;}
+    #abertura button{margin-top:4px; font-size:22px; padding:16px 52px;}
+    #abertura .dica{font-size:12px; margin-top:2px;}
+    #pranchas{padding:10px 14px 20px; gap:14px;}
+    .links-site{gap:2px;}
+    .links-site a, .links-site button{font-size:14px; padding:6px 9px;}
+    .avatar-pequeno, .dupla.com-coleguinha .avatar-pequeno{width:min(16vh, 30vw, 130px); border-width:5px;}
+    .escolha-prancha{gap:12px; width:100%;}
+    .escolha-prancha button{width:100%; max-width:420px; padding:16px 18px; gap:6px;}
+    .escolha-prancha button strong{font-size:20px;}
+  }
+  /* celular deitado: pouca altura */
+  @media (orientation:landscape) and (max-height:500px){
+    #abertura{padding:14px 20px; gap:10px;}
+    .abertura-conteudo{flex-wrap:nowrap; gap:4vw;}
+    .abertura-texto{gap:6px;}
+    .avatar{width:min(58vh, 230px); border-width:6px;}
+    .dupla.com-coleguinha .avatar:not(.avatar-pequeno){width:min(44vh, 170px);}
+    #logo-abertura{width:min(32vh, 170px);}
+    #abertura .slogan{font-size:16px;}
+    #abertura .apoio{font-size:13px;}
+    #abertura button{margin-top:4px; font-size:20px; padding:12px 44px;}
+    #abertura .dica{font-size:12px; margin-top:0;}
+    #pranchas{padding:8px 20px 14px; gap:10px;}
+    .links-site a, .links-site button{font-size:13px; padding:5px 9px;}
+    .avatar-pequeno, .dupla.com-coleguinha .avatar-pequeno{width:min(20vh, 90px); border-width:4px;}
+    #pranchas h1{font-size:22px;}
+    .escolha-prancha{gap:12px;}
+    .escolha-prancha button{width:280px; padding:12px 16px; gap:4px;}
+    .escolha-prancha button strong{font-size:18px;}
+    .escolha-prancha button span{font-size:13px;}
+    #pranchas .dica{font-size:12px;}
+  }
   @media (prefers-reduced-motion:reduce){*{transition:none !important;}}
 </style>
 </head>
@@ -343,7 +388,7 @@
 <div id="canto-config"></div>
 <div id="retorno"></div>
 <div id="aviso"></div>
-<div id="girar">Gire o tablet para a posição deitada.</div>
+<div id="girar">Gire o aparelho para a posição deitada.</div>
 
 <div id="pranchas" class="adulto oculta">
   <nav class="links-site">
@@ -560,7 +605,7 @@ function itensDaPagina(nome, pagina){
    2. CONFIGURAÇÃO
    ============================================================ */
 
-const VERSAO_APP = "3.5";
+const VERSAO_APP = "3.5.1";
 /* Linha de apoio "O verbo na ponta do dedo": rever se o app ganhar acesso
    por acionador ou por olhar, porque deixa de descrever todos os usuarios. */
 
@@ -1734,6 +1779,17 @@ document.addEventListener("visibilitychange", function(){
 /* abertura: o toque do adulto e o gesto que o navegador exige para
    tela cheia, trava de orientacao e liberacao do audio */
 document.getElementById("comecar").addEventListener("click", async function(){
+  /* a voz e a troca de tela vem primeiro, ainda dentro do toque:
+     no iOS, depois de um await o gesto se perde e a fala nao e liberada */
+  try{
+    if(window.speechSynthesis){
+      const u = new SpeechSynthesisUtterance(" ");
+      u.volume = 0; speechSynthesis.speak(u);
+    }
+  }catch(e){}
+  document.getElementById("abertura").classList.add("oculta");
+  document.getElementById("pranchas").classList.remove("oculta");
+  manterTelaAcesa();
   try{
     if(document.documentElement.requestFullscreen && !document.fullscreenElement){
       await document.documentElement.requestFullscreen();
@@ -1742,15 +1798,6 @@ document.getElementById("comecar").addEventListener("click", async function(){
   try{
     if(screen.orientation && screen.orientation.lock) await screen.orientation.lock("landscape");
   }catch(e){}
-  try{
-    if(window.speechSynthesis){
-      const u = new SpeechSynthesisUtterance(" ");
-      u.volume = 0; speechSynthesis.speak(u);
-    }
-  }catch(e){}
-  manterTelaAcesa();
-  document.getElementById("abertura").classList.add("oculta");
-  document.getElementById("pranchas").classList.remove("oculta");
 });
 
 function abrirPrancha(nome){

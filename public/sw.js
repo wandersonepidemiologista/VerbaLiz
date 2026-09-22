@@ -1,6 +1,6 @@
 /* Service worker: cache versionado.
    Ao publicar uma versao nova, troque VERSAO. */
-const VERSAO = "verbaliz-v15";
+const VERSAO = "verbaliz-v17";
 const ARQUIVOS = [
   "./",
   "./manifest.webmanifest",
@@ -9,6 +9,13 @@ const ARQUIVOS = [
   "./icone-maskable-512.png",
   "./logo-verbaliz.png",
   "./avatar-liz.jpg",
+  "./paginas.css",
+  "./sobre/",
+  "./licenciamento/",
+  "./instalacao/",
+  "./participe/",
+  "./quem-ajuda/",
+  "./colaboradores.json",
   "./conteudo/arasaac/2367.png",
   "./conteudo/arasaac/2458.png",
   "./conteudo/arasaac/2494.png",
@@ -80,14 +87,45 @@ self.addEventListener("activate", function(ev){
 
 self.addEventListener("fetch", function(ev){
   if(ev.request.method !== "GET") return;
+  const url = new URL(ev.request.url);
 
-  /* abrir o app: sempre a página raiz guardada no cache.
-     Nunca guardar nem servir resposta redirecionada, que o Chrome recusa. */
+  /* navegação: a raiz abre o app; as páginas do site (sobre, licenciamento,
+     instalação) vêm da rede e caem no cache quando não há internet.
+     Resposta redirecionada nunca é guardada, porque o Chrome a recusa. */
   if(ev.request.mode === "navigate"){
+    const raiz = url.pathname === "/" || url.pathname === "/index.html";
+    if(raiz){
+      ev.respondWith(
+        caches.match("./").then(function(c){ return c || fetch(ev.request); })
+          .catch(function(){ return caches.match("./"); })
+      );
+      return;
+    }
+    const comBarra = url.pathname.endsWith("/") ? url.pathname : url.pathname + "/";
     ev.respondWith(
-      caches.match("./").then(function(cacheado){
-        return cacheado || fetch(ev.request);
-      }).catch(function(){ return caches.match("./"); })
+      fetch(ev.request).then(function(resp){
+        if(resp && resp.status === 200 && !resp.redirected){
+          const copia = resp.clone();
+          caches.open(VERSAO).then(function(c){ c.put(comBarra, copia); });
+        }
+        return resp;
+      }).catch(function(){
+        return caches.match(comBarra).then(function(c){ return c || caches.match("./"); });
+      })
+    );
+    return;
+  }
+
+  /* lista de colaboradores: rede primeiro, para atualizar sem nova versão */
+  if(url.pathname.endsWith("/colaboradores.json")){
+    ev.respondWith(
+      fetch(ev.request).then(function(resp){
+        if(resp && resp.status === 200 && !resp.redirected){
+          const copia = resp.clone();
+          caches.open(VERSAO).then(function(c){ c.put("./colaboradores.json", copia); });
+        }
+        return resp;
+      }).catch(function(){ return caches.match("./colaboradores.json"); })
     );
     return;
   }

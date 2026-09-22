@@ -8,8 +8,10 @@ privado/
 Imagem_Liz*
 *_Liz.*
 
-# pacotes de atualização
-*.zip
-
 # prévias de tela, nunca publicar
 previa-*
+*.zip
+
+# respostas do formulário: dados pessoais, nunca vão para o repositório
+*.csv
+!public/**/*.csv

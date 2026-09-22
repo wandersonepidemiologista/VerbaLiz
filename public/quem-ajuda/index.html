@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#FAF1F1">
+<title>Quem ajuda · VerbaLiz</title>
+<meta name="description" content="Famílias, terapeutas, professores e desenvolvedores que ajudam o VerbaLiz.">
+<link rel="icon" href="../icone-192.png">
+<link rel="apple-touch-icon" href="../icone-maskable-512.png">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="stylesheet" href="../paginas.css">
+<style>
+.colab-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin:18px 0 8px;}
+.colab{background:#fff;border:1px solid var(--lilas-claro);border-radius:14px;padding:14px 16px;}
+.colab .nome{font-weight:700;color:var(--roxo);}
+.colab .local{font-size:14px;opacity:.8;}
+.colab .icones{font-size:21px;margin-top:6px;letter-spacing:3px;}
+.colab-vazio{grid-column:1/-1;background:#fff;border:1px dashed var(--lilas);border-radius:14px;padding:18px;}
+#legenda td:first-child{font-size:22px;width:52px;text-align:center;}
+</style>
+</head>
+<body>
+<header class="topo">
+  <div class="dentro">
+    <a class="marca" href="../"><img src="../icone-192.png" alt="">VerbaLiz</a>
+    <nav>
+      <a href="../sobre/">Sobre</a>
+      <a href="../instalacao/">Instalação</a>
+      <a href="../licenciamento/">Licenciamento</a>
+      <a href="../participe/">Participe</a>
+      <a href="../quem-ajuda/" aria-current="page">Quem ajuda</a>
+    </nav>
+    <a class="abrir" href="../">Abrir o aplicativo</a>
+  </div>
+</header>
+<main>
+<h1>Quem ajuda</h1>
+
+<p class="destaque">O VerbaLiz cresce com a ajuda de famílias, terapeutas, professores e desenvolvedores. Aqui aparece quem autorizou.</p>
+
+<p>Seguimos a ideia da especificação <a href="https://allcontributors.org" target="_blank" rel="noopener">All Contributors</a>: toda contribuição conta, não só código.</p>
+
+<div id="lista-colab" class="colab-grade" aria-live="polite"><p>Carregando…</p></div>
+
+<h2>O que cada símbolo quer dizer</h2>
+<div class="tabela"><table id="legenda"></table></div>
+
+<h2>Quer aparecer aqui?</h2>
+<p>Mande uma sugestão ou conte como foi usar o VerbaLiz pela página <a href="../participe/">Participe</a> e autorize a publicação do seu nome. Para corrigir ou retirar seu nome, escreva para <a href="mailto:verbaliz.app@gmail.com">verbaliz.app@gmail.com</a>.</p>
+
+<h2>Também fazem parte</h2>
+<p>Pictogramas: Sergio Palao, <a href="https://arasaac.org" target="_blank" rel="noopener">ARASAAC</a>, Governo de Aragão, sob licença CC BY-NC-SA.</p>
+</main>
+<footer class="rodape">
+  <div class="dentro">
+    <div class="empresa">
+      <!-- trocar pelo logotipo da EPIC95 quando o arquivo chegar: ../epic95.png -->
+      <span class="epic95">EPIC95</span>
+      <span>Desenvolvimento: EPIC95 · <a href="https://www.wandersonepidemiologista.com" target="_blank" rel="noopener">wandersonepidemiologista.com</a></span>
+    </div>
+    <div>Uso gratuito, sem fins comerciais · <a href="../licenciamento/">Licenciamento</a> · <a href="https://github.com/wandersonepidemiologista/VerbaLiz" target="_blank" rel="noopener">GitHub</a></div>
+  </div>
+</footer>
+<script>
+(function(){
+  var TIPOS=[
+    ["ideas","\u{1F914}","Ideias e sugestões"],
+    ["userTesting","\u{1F4D3}","Teste com crianças"],
+    ["bug","\u{1F41B}","Relato de problema"],
+    ["translation","\u{1F30D}","Tradução"],
+    ["promotion","\u{1F4E3}","Divulgação"],
+    ["financial","\u{1F4B5}","Apoio financeiro"],
+    ["design","\u{1F3A8}","Figuras e desenho"],
+    ["code","\u{1F4BB}","Código"]
+  ];
+  var MAPA={}; TIPOS.forEach(function(t){MAPA[t[0]]=t;});
+  var leg=document.getElementById("legenda");
+  TIPOS.forEach(function(t){ var tr=document.createElement("tr");
+    var a=document.createElement("td"); a.textContent=t[1];
+    var b=document.createElement("td"); b.textContent=t[2]; tr.appendChild(a); tr.appendChild(b); leg.appendChild(tr); });
+
+  var alvo=document.getElementById("lista-colab");
+  function vazio(msg){ alvo.innerHTML=""; var d=document.createElement("div"); d.className="colab-vazio"; d.textContent=msg; alvo.appendChild(d); }
+
+  fetch("../colaboradores.json",{cache:"no-store"}).then(function(r){ if(!r.ok) throw 0; return r.json(); })
+  .then(function(dados){
+    var lista=(dados && dados.colaboradores) || [];
+    if(!lista.length){ vazio("A lista está começando. A próxima pessoa pode ser você."); return; }
+    lista.sort(function(a,b){ return a.nome.localeCompare(b.nome,"pt-BR"); });
+    alvo.innerHTML="";
+    lista.forEach(function(c){
+      var card=document.createElement("div"); card.className="colab";
+      var n=document.createElement("div"); n.className="nome"; n.textContent=c.nome; card.appendChild(n);
+      if(c.local){ var l=document.createElement("div"); l.className="local"; l.textContent=c.local; card.appendChild(l); }
+      var ic=document.createElement("div"); ic.className="icones";
+      (c.contribuicoes||[]).forEach(function(k){ var t=MAPA[k]; if(!t) return;
+        var s=document.createElement("span"); s.textContent=t[1]; s.title=t[2]; s.setAttribute("aria-label",t[2]); ic.appendChild(s); });
+      card.appendChild(ic); alvo.appendChild(card);
+    });
+  }).catch(function(){ vazio("Não foi possível carregar a lista agora. Tente de novo com internet."); });
+})();
+</script>
+</body>
+</html>

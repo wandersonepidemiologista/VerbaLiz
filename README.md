@@ -10,6 +10,8 @@ Dois cards grandes por tela, som, e confirmação Sim ou Não. Funciona offline 
 
 *Nasceu para a Liz. Serve a quem precisar.*
 
+**Vai instalar para uma criança?** Leia primeiro o [guia para famílias](COMO-USAR.md), com aparelhos compatíveis, passo a passo e limitações.
+
 ## Para quem isso serve
 
 Perfil de partida:

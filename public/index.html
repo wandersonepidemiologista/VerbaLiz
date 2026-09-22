@@ -181,6 +181,12 @@
     display:none; flex-direction:column; align-items:center; justify-content:center; gap:24px;
   }
   #retorno.ativo{display:flex;}
+  #sair-entrega{
+    position:fixed; right:14px; bottom:14px; width:80px; height:80px; padding:0;
+    border-radius:50%; background:var(--superficie-crianca); border:4px solid var(--lilas-claro);
+    color:var(--lilas-claro); display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+  #sair-entrega svg{width:40px; height:40px;}
   #retorno svg{width:46vmin; height:46vmin;}
   #retorno .texto{font-size:clamp(28px,6vmin,64px); font-weight:700;}
 
@@ -554,7 +560,7 @@ function itensDaPagina(nome, pagina){
    2. CONFIGURAÇÃO
    ============================================================ */
 
-const VERSAO_APP = "3.4";
+const VERSAO_APP = "3.4.1";
 /* Linha de apoio "O verbo na ponta do dedo": rever se o app ganhar acesso
    por acionador ou por olhar, porque deixa de descrever todos os usuarios. */
 
@@ -1175,21 +1181,27 @@ async function entregarMensagem(id){
   const def = CARDS[id];
   const meuSeq = seqNav;
   elRetorno.innerHTML = '<div style="height:46vmin">'+simboloHTML(id, false)+'</div>'
-                      + '<div class="texto" style="color:'+corVar(def.cor)+'">'+def.rotulo+'</div>';
+                      + '<div class="texto" style="color:'+corVar(def.cor)+'">'+def.rotulo+'</div>'
+                      + '<button id="sair-entrega" type="button" aria-label="Voltar ao menu">'
+                      + '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">'
+                      + '<path d="M62 22 L34 50 L62 78"/></svg></button>';
   elRetorno.classList.add("ativo");
   registrar({tela:"entrega", card:id, rotulo:def.rotulo, evento:"mensagem_entregue"});
   travado = true;
-  entregaAtual = {id:id, falando:true, fim:0};
+  entregaAtual = {id:id, falando:true, fim:0, sair:false};
   await falarReforco(id);
   if(meuSeq !== seqNav) return;
   entregaAtual.falando = false; entregaAtual.fim = performance.now();
 
-  /* fica na tela até passar o tempo configurado depois da última fala;
-     cada toque na figura repete o reforço e recomeça a contagem */
+  /* fica na tela até tocar no botão de voltar ou, se houver tempo configurado,
+     até passar esse tempo depois da última fala. Cada toque na figura repete
+     o reforço e recomeça a contagem. Tempo 0: só sai pelo botão. */
   while(true){
+    if(entregaAtual && entregaAtual.sair) break;
     await espera(150);
     if(meuSeq !== seqNav) return;
-    if(entregaAtual && !entregaAtual.falando &&
+    if(entregaAtual && entregaAtual.sair) break;
+    if(CFG.segurarRetornoMs > 0 && entregaAtual && !entregaAtual.falando &&
        performance.now() - entregaAtual.fim >= CFG.segurarRetornoMs) break;
   }
   entregaAtual = null;
@@ -1199,9 +1211,18 @@ async function entregarMensagem(id){
   destravar();
 }
 
-elRetorno.addEventListener("pointerup", async function(){
+elRetorno.addEventListener("pointerup", async function(ev){
+  if(ev.target.closest && ev.target.closest("#sair-entrega")){
+    const e = entregaAtual;
+    if(!e || e.sair) return;
+    e.sair = true;
+    try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(err){}
+    try{ if(audioAtual){ audioAtual.pause(); } }catch(err){}
+    registrar({tela:"entrega", card:e.id, rotulo:CARDS[e.id].rotulo, evento:"voltou_da_entrega"});
+    return;
+  }
   const e = entregaAtual;
-  if(!e || e.falando) return;
+  if(!e || e.falando || e.sair) return;
   if(performance.now() - e.fim < 400) return;     // ignora toque repetido colado ao fim da fala
   e.falando = true;
   registrar({tela:"entrega", card:e.id, rotulo:CARDS[e.id].rotulo, evento:"repetiu_reforco"});
@@ -1445,8 +1466,8 @@ async function renderConfig(){
     alternador(CFG.mostrarRotulo, function(v){ CFG.mostrarRotulo = v; salvarCfg(); })));
   add(linha("Tamanho do rótulo", "",
     deslizante(CFG.tamanhoRotulo, 20, 88, 2, " px", function(v){ CFG.tamanhoRotulo = v; salvarCfg(); })));
-  add(linha("Tempo da tela de entrega", "Quanto tempo a figura fica na tela depois da última fala. Cada toque na figura repete a frase e recomeça a contagem.",
-    deslizante(CFG.segurarRetornoMs, 800, 8000, 200, " ms", function(v){ CFG.segurarRetornoMs = v; salvarCfg(); })));
+  add(linha("Tempo da tela de entrega", "Quanto tempo a figura fica na tela depois da última fala. Cada toque na figura repete a frase e recomeça a contagem. O botão de voltar, no canto inferior direito, sai na hora. Em 0, só sai pelo botão.",
+    deslizante(CFG.segurarRetornoMs, 0, 8000, 200, " ms", function(v){ CFG.segurarRetornoMs = v; salvarCfg(); })));
 
   /* fluxo */
   add(titulo("Tempo de resposta"));

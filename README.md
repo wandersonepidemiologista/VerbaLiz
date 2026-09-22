@@ -139,13 +139,13 @@ Este é um projeto de **código disponível para uso não comercial**. Não é s
 
 **Pode.** Usar com qualquer criança, em casa, na escola, na clínica, no serviço público, em associação sem fins lucrativos. Modificar o código e o vocabulário. Publicar a sua versão adaptada, inclusive com outro vocabulário ou outros símbolos, desde que também sem fins comerciais.
 
-**Precisa.** Manter a linha `Required Notice: Copyright (c) 2026 Wanderson Kleber de Oliveira` em qualquer cópia ou versão do código. Dar crédito ao conteúdo. Publicar adaptações do conteúdo sob a mesma licença CC BY-NC-SA.
+**Precisa.** Manter a linha `Required Notice: Copyright (c) 2026 EPIC95 CAPACITACAO - CONSULTORIA E ASSESSORIA LTDA` em qualquer cópia ou versão do código. Dar crédito ao conteúdo. Publicar adaptações do conteúdo sob a mesma licença CC BY-NC-SA.
 
 **Não pode.** Vender, incluir em produto pago ou usar como parte de serviço comercial.
 
 ### Avatar da Liz
 
-A imagem da página inicial, `public/avatar-liz.jpg`, é exceção às licenças acima: todos os direitos reservados, exibição autorizada apenas dentro do VerbaLiz. Quem adaptar o app para outra criança deve remover ou substituir esse arquivo. Pela configuração, qualquer família pode trocar a imagem no próprio aparelho, sem mexer no código.
+A imagem da página inicial, `public/avatar-liz.jpg`, é exceção às licenças acima: direitos da família da Liz, todos reservados, exibição autorizada apenas dentro do VerbaLiz. No VerbaLiz oficial ela aparece sempre, como parte da identidade do app, e cada família pode colocar ao lado a foto da própria criança, como coleguinha, pela configuração. Quem adaptar o código para outro projeto deve remover ou substituir esse arquivo.
 
 ### Símbolos de terceiros
 

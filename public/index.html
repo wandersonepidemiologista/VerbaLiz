@@ -2,7 +2,7 @@
 <!--
   VerbaLiz
   Quem não fala também tem o que dizer.
-  Required Notice: Copyright (c) 2026 Wanderson Kleber de Oliveira
+  Required Notice: Copyright (c) 2026 EPIC95 CAPACITACAO - CONSULTORIA E ASSESSORIA LTDA
 
   Codigo: PolyForm Noncommercial License 1.0.0
   https://polyformproject.org/licenses/noncommercial/1.0.0
@@ -211,6 +211,9 @@
     border:8px solid var(--turquesa); box-shadow:0 8px 28px rgba(103,84,130,.18);
   }
   .avatar.oculto{display:none;}
+  .dupla{display:flex; align-items:center; justify-content:center; gap:min(3vw,28px);}
+  .avatar.coleguinha{border-color:#E1B368;}
+  .dupla.com-coleguinha .avatar:not(.avatar-pequeno){width:min(40vh, 290px);}
   .avatar-pequeno{width:min(26vh, 190px); border-width:6px;}
   #abertura .slogan{font-size:clamp(18px,2.6vw,26px); margin:0; max-width:34ch;}
   #abertura .apoio{font-size:15px; margin:0; color:var(--roxo); opacity:.8;}
@@ -255,6 +258,12 @@
     padding:14px 18px; border-bottom:2px solid var(--lilas-claro); flex:0 0 auto;
   }
   #config header h1{font-size:19px; margin:0; font-weight:700; color:var(--roxo);}
+  #config header h1{margin-right:auto;}
+  #config header{gap:10px;}
+  #config header a.btn{
+    font-weight:600; font-size:14px; font-family:inherit; padding:9px 16px; border-radius:10px; text-decoration:none;
+    background:#fff; color:var(--roxo); border:1px solid var(--lilas-claro);
+  }
   #config .corpo{flex:1 1 auto; overflow-y:auto; padding:18px; padding-bottom:60px;}
   #config h2{
     font-size:14px; font-weight:700; color:var(--roxo); margin:26px 0 10px;
@@ -333,13 +342,17 @@
 <div id="pranchas" class="adulto oculta">
   <nav class="links-site">
     <a href="sobre/">Sobre</a>
+    <a href="ajuda/">Ajuda</a>
     <a href="instalacao/">Instalação</a>
     <a href="licenciamento/">Licenciamento</a>
     <a href="participe/">Participe</a>
     <a href="quem-ajuda/">Quem ajuda</a>
     <button type="button" id="link-config">Configuração</button>
   </nav>
-  <img id="avatar-pranchas" class="avatar avatar-pequeno oculto" alt="Ilustração da Liz: menina de pele clara, cabelos castanhos de comprimento médio, levemente ondulados e divididos de lado, óculos de armação rosa com detalhe azul-claro nas hastes, camiseta branca, olhar atento e curioso voltado para cima e para o lado.">
+  <div class="dupla">
+    <img id="avatar-pranchas" class="avatar avatar-pequeno" src="avatar-liz.jpg" alt="Ilustração da Liz: menina de pele clara, cabelos castanhos de comprimento médio, levemente ondulados e divididos de lado, óculos de armação rosa com detalhe azul-claro nas hastes, camiseta branca, olhar atento e curioso voltado para cima e para o lado.">
+    <img id="coleg-pranchas" class="avatar avatar-pequeno coleguinha oculto" alt="Coleguinha">
+  </div>
   <h1>Qual prancha?</h1>
   <div class="escolha-prancha">
     <button id="abrir-simnao">
@@ -357,9 +370,13 @@
 <div id="abertura" class="adulto">
   <div class="abertura-conteudo">
     <!-- avatar da Liz, publicado com autorização expressa do pai.
-         Não coberto pela CC BY-NC-SA: todos os direitos reservados (ver LICENSE-CONTEUDO.md).
-         Outra família pode trocar pela configuração; a troca fica só no aparelho dela. -->
-    <img id="avatar-abertura" class="avatar oculto" alt="Liz">
+         Não coberto pela CC BY-NC-SA: direitos da família, todos reservados (ver LICENSE-CONTEUDO.md).
+         Faz parte da identidade do VerbaLiz e aparece sempre. Ao lado, a foto do coleguinha,
+         escolhida pelo responsável na configuração e guardada só no aparelho. -->
+    <div class="dupla">
+      <img id="avatar-abertura" class="avatar" src="avatar-liz.jpg" alt="Ilustração da Liz: menina de pele clara, cabelos castanhos de comprimento médio, levemente ondulados e divididos de lado, óculos de armação rosa com detalhe azul-claro nas hastes, camiseta branca, olhar atento e curioso voltado para cima e para o lado.">
+      <img id="coleg-abertura" class="avatar coleguinha oculto" alt="Coleguinha">
+    </div>
     <div class="abertura-texto">
       <img id="logo-abertura" src="logo-verbaliz.png" alt="VerbaLiz">
       <p class="slogan">Quem não fala também tem o que dizer.</p>
@@ -374,6 +391,7 @@
 <div id="config" class="adulto">
   <header>
     <h1>Configuração</h1>
+    <a class="btn" href="ajuda/#configuracao">Ajuda</a>
     <button class="btn primario" id="fechar-config">Voltar ao app</button>
   </header>
   <div class="corpo" id="config-corpo"></div>
@@ -536,7 +554,7 @@ function itensDaPagina(nome, pagina){
    2. CONFIGURAÇÃO
    ============================================================ */
 
-const VERSAO_APP = "3.3";
+const VERSAO_APP = "3.4";
 /* Linha de apoio "O verbo na ponta do dedo": rever se o app ganhar acesso
    por acionador ou por olhar, porque deixa de descrever todos os usuarios. */
 
@@ -574,7 +592,6 @@ const PADRAO = {
   vaoCards:6,               // vao entre os dois cards, em % da largura
   bordaCard:12,             // px
   simbolos:"arasaac",
-  mostrarAvatar:true,       // imagem ao lado do logotipo na abertura       // arasaac | simples
   porPaginaMenu:2,          // cards por página numa prancha de categorias
   porPaginaEscolha:2,       // cards por página numa escolha
   homeToqueLongoMs:2000,    // botão do adulto: segurar este tempo para sair. 0 = toque simples
@@ -1503,30 +1520,28 @@ async function renderConfig(){
     })));
 
   /* abertura */
-  add(titulo("Tela de abertura"));
-  const temAvatar = !!(await urlMidia("foto:abertura"));
-  const entradaAvatar = document.createElement("input");
-  entradaAvatar.type = "file"; entradaAvatar.accept = "image/*"; entradaAvatar.style.display = "none";
-  entradaAvatar.addEventListener("change", async function(){
-    const f = entradaAvatar.files[0];
+  add(titulo("Coleguinha"));
+  const temColeg = !!(await urlMidia("foto:coleguinha"));
+  const entradaColeg = document.createElement("input");
+  entradaColeg.type = "file"; entradaColeg.accept = "image/*"; entradaColeg.style.display = "none";
+  entradaColeg.addEventListener("change", async function(){
+    const f = entradaColeg.files[0];
     if(!f) return;
-    await put("midia", f, "foto:abertura");
+    await put("midia", f, "foto:coleguinha");
     await carregarAvatar();
-    aviso("Imagem da abertura salva neste aparelho"); renderConfig();
+    aviso("Foto do coleguinha salva neste aparelho"); renderConfig();
   });
-  elCorpo.appendChild(entradaAvatar);
-  const acoesAvatar = document.createElement("div");
-  acoesAvatar.style.display = "flex"; acoesAvatar.style.gap = "8px";
-  acoesAvatar.appendChild(botao(temAvatar ? "Trocar imagem" : "Usar outra imagem", "primario",
-    function(){ entradaAvatar.click(); }));
-  if(temAvatar) acoesAvatar.appendChild(botao("Voltar ao avatar da Liz", "alerta", async function(){
-    await del("midia", "foto:abertura"); await carregarAvatar(); renderConfig();
+  elCorpo.appendChild(entradaColeg);
+  const acoesColeg = document.createElement("div");
+  acoesColeg.style.display = "flex"; acoesColeg.style.gap = "8px";
+  acoesColeg.appendChild(botao(temColeg ? "Trocar foto" : "Escolher foto", "primario",
+    function(){ entradaColeg.click(); }));
+  if(temColeg) acoesColeg.appendChild(botao("Remover", "alerta", async function(){
+    await del("midia", "foto:coleguinha"); await carregarAvatar(); renderConfig();
   }));
-  add(linha("Imagem na página inicial",
-    "Padrão: o avatar da Liz, que vem com o app. Uma imagem escolhida aqui substitui o avatar só neste aparelho e não vai para o servidor.",
-    acoesAvatar));
-  add(linha("Mostrar imagem na página inicial", "Desligado, a abertura mostra só o logotipo.",
-    alternador(CFG.mostrarAvatar, function(v){ CFG.mostrarAvatar = v; salvarCfg(); carregarAvatar(); })));
+  add(linha("Foto ao lado da Liz",
+    "Uma foto ou imagem da criança que usa o app, ao lado do avatar da Liz, na abertura e na escolha de prancha. Fica só neste aparelho e não vai para o servidor.",
+    acoesColeg));
 
   /* app */
   add(titulo("Aplicativo"));
@@ -1549,24 +1564,29 @@ async function renderConfig(){
   /* sobre */
   add(titulo("Sobre"));
   const sobre = document.createElement("div");
-  sobre.style.cssText = "font-size:13.5px; color:#a8a8a8; line-height:1.65;";
+  sobre.style.cssText = "font-size:13.5px; color:#4A3A6B; line-height:1.65;";
+  const T = "<strong style='color:#675482'>";
   sobre.innerHTML =
-      "<p style='margin:0 0 12px'><strong style='color:#fff; font-size:15px'>VerbaLiz</strong>, versão " + VERSAO_APP + "<br>"
+      "<p style='margin:0 0 12px'><strong style='color:#675482; font-size:15px'>VerbaLiz</strong>, versão " + VERSAO_APP + "<br>"
     + "Quem não fala também tem o que dizer.</p>"
     + "<p style='margin:0 0 12px'>Nasceu para a Liz. Serve a quem precisar.</p>"
-    + "<p style='margin:0 0 12px'><strong style='color:#9fb4c9'>Autoria</strong><br>"
-    + "Copyright (c) 2026 Wanderson Kleber de Oliveira</p>"
-    + "<p style='margin:0 0 12px'><strong style='color:#9fb4c9'>Licença do código</strong><br>"
+    + "<p style='margin:0 0 12px'><img src='epic95-logo.png' alt='EPIC95' style='width:220px;max-width:100%;height:auto;display:block'></p>"
+    + "<p style='margin:0 0 12px'>" + T + "Autoria</strong><br>"
+    + "Copyright (c) 2026 EPIC95 CAPACITACAO - CONSULTORIA E ASSESSORIA LTDA<br>"
+    + "Criado por Wanderson Kleber de Oliveira, pai da Liz.</p>"
+    + "<p style='margin:0 0 12px'>" + T + "Licença do código</strong><br>"
     + "PolyForm Noncommercial License 1.0.0<br>"
     + "polyformproject.org/licenses/noncommercial/1.0.0<br>"
     + "Uso, modificação e redistribuição permitidos para fins não comerciais, "
     + "mantendo a linha de autoria.</p>"
-    + "<p style='margin:0 0 12px'><strong style='color:#9fb4c9'>Licença do conteúdo</strong><br>"
+    + "<p style='margin:0 0 12px'>" + T + "Licença do conteúdo</strong><br>"
     + "Símbolos e vocabulário padrão: Creative Commons CC BY-NC-SA 4.0<br>"
     + "creativecommons.org/licenses/by-nc-sa/4.0</p>"
-    + "<p style='margin:0 0 12px'><strong style='color:#9fb4c9'>Créditos de terceiros</strong><br>"
+    + "<p style='margin:0 0 12px'>" + T + "Imagem da Liz</strong><br>"
+    + "Direitos da família, todos reservados. Uso autorizado só dentro do VerbaLiz.</p>"
+    + "<p style='margin:0 0 12px'>" + T + "Créditos de terceiros</strong><br>"
     + CREDITOS_TERCEIROS + "</p>"
-    + "<p style='margin:0 0 12px'><strong style='color:#9fb4c9'>Seus dados</strong><br>"
+    + "<p style='margin:0 0 12px'>" + T + "Seus dados</strong><br>"
     + "Vozes, fotos, pranchas e registros criados neste aparelho são seus, "
     + "ficam só aqui e não são enviados a lugar nenhum.</p>"
     + "<p style='margin:0'>Código disponível para uso não comercial. "
@@ -1726,18 +1746,27 @@ if("serviceWorker" in navigator){
    12. INÍCIO
    ============================================================ */
 
-/* imagem da abertura: a carregada no aparelho tem prioridade;
-   sem ela, o avatar da Liz que vem com o app */
+/* o avatar da Liz aparece sempre; o coleguinha, se o responsável escolheu uma foto.
+   Quem usava a antiga troca de imagem da abertura tem a foto aproveitada como coleguinha. */
 async function carregarAvatar(){
-  const els = [document.getElementById("avatar-abertura"), document.getElementById("avatar-pranchas")];
-  if(!CFG.mostrarAvatar){ els.forEach(function(el){ el.classList.add("oculto"); }); return; }
-  invalidarMidia("foto:abertura");
+  try{
+    const antiga = await urlMidia("foto:abertura");
+    const jaTem  = await urlMidia("foto:coleguinha");
+    if(antiga && !jaTem){
+      const blob = await (await fetch(antiga)).blob();
+      await put("midia", blob, "foto:coleguinha");
+      await del("midia", "foto:abertura");
+      invalidarMidia("foto:abertura");
+    }
+  }catch(e){}
+  invalidarMidia("foto:coleguinha");
   let url = null;
-  try{ url = await urlMidia("foto:abertura"); }catch(e){}
-  els.forEach(function(el){
-    el.src = url || "avatar-liz.jpg";
-    el.alt = url ? "" : "Liz";
-    el.classList.remove("oculto");
+  try{ url = await urlMidia("foto:coleguinha"); }catch(e){}
+  ["abertura","pranchas"].forEach(function(onde){
+    const el = document.getElementById("coleg-" + onde);
+    if(url){ el.src = url; el.classList.remove("oculto"); }
+    else{ el.removeAttribute("src"); el.classList.add("oculto"); }
+    el.parentElement.classList.toggle("com-coleguinha", !!url);
   });
 }
 

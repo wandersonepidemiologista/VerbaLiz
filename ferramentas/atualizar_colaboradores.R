@@ -1,5 +1,5 @@
 # VerbaLiz: atualiza public/colaboradores.json a partir das respostas do formulário
-# Required Notice: Copyright (c) 2026 Wanderson Kleber de Oliveira
+# Required Notice: Copyright (c) 2026 EPIC95 CAPACITACAO - CONSULTORIA E ASSESSORIA LTDA
 # Licença: PolyForm Noncommercial 1.0.0
 #
 # Como usar

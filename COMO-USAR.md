@@ -4,6 +4,8 @@
 
 O VerbaLiz é um aplicativo gratuito de comunicação alternativa em português, para crianças que não falam. Funciona no navegador, pode ser instalado na tela inicial e, depois da primeira abertura, funciona sem internet.
 
+A explicação completa de uso e de cada ajuste da configuração está em <https://www.verbaliz.com.br/ajuda/>.
+
 Endereço: **https://verbaliz.pages.dev**
 
 Este guia explica em quais aparelhos ele funciona, como instalar e, principalmente, o que ele ainda não faz. Leia antes de apresentar à criança.

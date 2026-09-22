@@ -1,7 +1,8 @@
 # Licença do conteúdo
 
 VerbaLiz
-Copyright (c) 2026 Wanderson Kleber de Oliveira
+Copyright (c) 2026 EPIC95 CAPACITACAO - CONSULTORIA E ASSESSORIA LTDA
+Criado por Wanderson Kleber de Oliveira.
 
 O conteúdo deste repositório que não é código está licenciado sob
 **Creative Commons Atribuição-NãoComercial-CompartilhaIgual 4.0 Internacional (CC BY-NC-SA 4.0)**.
@@ -19,18 +20,22 @@ Em caso de divergência entre este arquivo e o texto publicado pela Creative Com
 - o vocabulário padrão, ou seja, rótulos e frases dos objetos `CARDS` e `TELAS` em `public/index.html`
 - `README.md` e demais documentos
 
+O logotipo da EPIC95, `public/epic95-logo.png`, é marca da empresa e não está sob CC BY-NC-SA.
+
 Todo o resto é código e segue a PolyForm Noncommercial License 1.0.0, no arquivo `LICENSE`.
 
 ## Atribuição
 
-> VerbaLiz, de Wanderson Kleber de Oliveira. Conteúdo sob CC BY-NC-SA 4.0.
+> VerbaLiz, EPIC95. Criado por Wanderson Kleber de Oliveira. Conteúdo sob CC BY-NC-SA 4.0.
 > https://github.com/wandersonepidemiologista/VerbaLiz
 
 ## Exceção: avatar da Liz
 
 O arquivo `public/avatar-liz.jpg` **não** está licenciado sob CC BY-NC-SA nem sob nenhuma outra licença deste repositório.
 
-Copyright (c) 2026 Wanderson Kleber de Oliveira. Todos os direitos reservados.
+Copyright (c) 2026 Wanderson Kleber de Oliveira, pai da Liz. Todos os direitos reservados.
+
+Os direitos sobre a imagem da Liz pertencem à família e não fazem parte dos direitos cedidos à EPIC95.
 
 A imagem é publicada com autorização expressa dos pais, exclusivamente para exibição dentro do aplicativo VerbaLiz, sem modificação. Não é permitido copiar, modificar, redistribuir ou usar a imagem fora do aplicativo, nem em versões adaptadas dele. Quem redistribuir o VerbaLiz deve remover este arquivo ou substituí-lo por imagem própria.
 

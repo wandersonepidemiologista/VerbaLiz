@@ -15,7 +15,7 @@ Em caso de divergência entre este arquivo e o texto publicado pela Creative Com
 ## O que é conteúdo, neste repositório
 
 - os desenhos dos símbolos, escritos em SVG dentro da função `icone()` em `public/index.html`
-- o logotipo VerbaLiz e os ícones do aplicativo, `public/logo-verbaliz.png`, `public/icone-192.png`, `public/icone-512.png` e `public/icone-maskable-512.png`
+- os ícones do aplicativo, `public/icone-192.png`, `public/icone-512.png` e `public/icone-maskable-512.png`
 - os pictogramas ARASAAC em `public/conteudo/arasaac/`, de terceiros, listados em `CREDITOS.md` na mesma pasta
 - o vocabulário padrão, ou seja, rótulos e frases dos objetos `CARDS` e `TELAS` em `public/index.html`
 - `README.md` e demais documentos
@@ -31,9 +31,9 @@ Todo o resto é código e segue a PolyForm Noncommercial License 1.0.0, no arqui
 
 ## Exceção: avatar da Liz
 
-O arquivo `public/avatar-liz.jpg` **não** está licenciado sob CC BY-NC-SA nem sob nenhuma outra licença deste repositório.
+O logotipo `public/logo-verbaliz.png` e os ícones gerados a partir dele (`public/icone-192.png`, `public/icone-512.png`, `public/icone-maskable-512.png`) trazem o avatar da Liz, um desenho em estilo cartoon criado com base nela, e **não** estão licenciados sob CC BY-NC-SA nem sob nenhuma outra licença deste repositório.
 
-Copyright (c) 2026 Wanderson Kleber de Oliveira, pai da Liz. Todos os direitos reservados.
+Copyright (c) 2026 Wanderson Kleber de Oliveira, pai da Liz. Todos os direitos reservados. Quem adaptar o código para outra criança deve substituir esses arquivos.
 
 Os direitos sobre a imagem da Liz pertencem à família e não fazem parte dos direitos cedidos à EPIC95.
 

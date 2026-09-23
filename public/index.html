@@ -203,28 +203,26 @@
 
   #abertura{
     position:fixed; inset:0; z-index:150;
-    display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
     gap:18px; padding:32px; text-align:center;
-    overflow-y:auto; -webkit-overflow-scrolling:touch;
   }
   #abertura.oculta{display:none;}
   .abertura-conteudo{
-    display:flex; align-items:center; justify-content:center; gap:5vw; flex-wrap:wrap;
-    margin:auto 0; /* centraliza quando cabe; quando nao cabe, rola sem cortar o topo */
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2vh;
   }
   .abertura-texto{display:flex; flex-direction:column; align-items:center; gap:14px;}
-  #logo-abertura{width:min(40vh, 340px); height:auto; display:block;}
+  #logo-abertura{width:min(46vh, 360px); height:auto; display:block;}
+  .dupla.com-coleguinha #logo-abertura{width:min(38vh, 300px);}
   .avatar{
     width:min(52vh, 380px); aspect-ratio:1/1; object-fit:cover; border-radius:50%;
     border:8px solid var(--turquesa); box-shadow:0 8px 28px rgba(103,84,130,.18);
   }
   .avatar.oculto{display:none;}
+  .avatar.sem-borda{border:0; background:none;}
   .dupla{display:flex; align-items:center; justify-content:center; gap:min(3vw,28px);}
   .avatar.coleguinha{border-color:#E1B368;}
-  .dupla.com-coleguinha .avatar:not(.avatar-pequeno){width:min(40vh, 290px);}
+  .dupla.com-coleguinha .avatar:not(.avatar-pequeno){width:min(30vh, 230px);}
   .avatar-pequeno{width:min(26vh, 190px); border-width:6px;}
-  #abertura .slogan{font-size:clamp(18px,2.6vw,26px); margin:0; max-width:34ch;}
-  #abertura .apoio{font-size:15px; margin:0; color:var(--roxo); opacity:.8;}
   #abertura button{
     margin-top:14px; font-size:24px; font-weight:700; padding:18px 56px; border-radius:18px;
     background:var(--azul-petroleo); color:#fff; border:none; font-family:inherit;
@@ -233,14 +231,13 @@
 
   #pranchas{
     position:fixed; inset:0; z-index:140;
-    display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
-    gap:22px; padding:14px 30px 30px; text-align:center;
-    overflow-y:auto; -webkit-overflow-scrolling:touch;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:22px; padding:30px; text-align:center;
   }
-  #pranchas > .dupla{margin-top:auto;}
   #pranchas.oculta{display:none;}
   .links-site{
-    display:flex; justify-content:center; gap:6px; flex-wrap:wrap; flex-shrink:0;
+    position:absolute; top:14px; left:0; right:0;
+    display:flex; justify-content:center; gap:6px; flex-wrap:wrap;
   }
   .links-site a, .links-site button{
     color:var(--texto-adulto); text-decoration:none; font-size:15px; font-family:inherit;
@@ -258,7 +255,7 @@
   }
   .escolha-prancha button strong{font-size:22px; color:var(--roxo);}
   .escolha-prancha button span{font-size:14px; line-height:1.45;}
-  #pranchas .dica{font-size:13px; opacity:.72; margin:0 0 auto;}
+  #pranchas .dica{font-size:13px; opacity:.72; margin:0;}
 
   #config{position:fixed; inset:0; z-index:170; display:none; flex-direction:column;}
   #config.ativo{display:flex;}
@@ -317,48 +314,6 @@
     max-width:86vw; text-align:center;
   }
   #aviso.ativo{opacity:1;}
-  /* celular em pe: avatar e logo menores para o botao Comecar aparecer sem rolar */
-  @media (orientation:portrait) and (max-width:600px){
-    #abertura{padding:18px 16px; gap:10px;}
-    .abertura-conteudo{flex-direction:column; gap:10px;}
-    .abertura-texto{gap:8px;}
-    .avatar{width:min(24vh, 46vw, 200px); border-width:6px;}
-    .dupla.com-coleguinha .avatar:not(.avatar-pequeno){width:min(20vh, 38vw, 160px);}
-    #logo-abertura{width:min(19vh, 56vw, 220px);}
-    #abertura .slogan{font-size:17px;}
-    #abertura .apoio{font-size:14px;}
-    #abertura button{margin-top:4px; font-size:22px; padding:16px 52px;}
-    #abertura .dica{font-size:12px; margin-top:2px;}
-    #pranchas{padding:10px 14px 20px; gap:14px;}
-    .links-site{gap:2px;}
-    .links-site a, .links-site button{font-size:14px; padding:6px 9px;}
-    .avatar-pequeno, .dupla.com-coleguinha .avatar-pequeno{width:min(16vh, 30vw, 130px); border-width:5px;}
-    .escolha-prancha{gap:12px; width:100%;}
-    .escolha-prancha button{width:100%; max-width:420px; padding:16px 18px; gap:6px;}
-    .escolha-prancha button strong{font-size:20px;}
-  }
-  /* celular deitado: pouca altura */
-  @media (orientation:landscape) and (max-height:500px){
-    #abertura{padding:14px 20px; gap:10px;}
-    .abertura-conteudo{flex-wrap:nowrap; gap:4vw;}
-    .abertura-texto{gap:6px;}
-    .avatar{width:min(58vh, 230px); border-width:6px;}
-    .dupla.com-coleguinha .avatar:not(.avatar-pequeno){width:min(44vh, 170px);}
-    #logo-abertura{width:min(32vh, 170px);}
-    #abertura .slogan{font-size:16px;}
-    #abertura .apoio{font-size:13px;}
-    #abertura button{margin-top:4px; font-size:20px; padding:12px 44px;}
-    #abertura .dica{font-size:12px; margin-top:0;}
-    #pranchas{padding:8px 20px 14px; gap:10px;}
-    .links-site a, .links-site button{font-size:13px; padding:5px 9px;}
-    .avatar-pequeno, .dupla.com-coleguinha .avatar-pequeno{width:min(20vh, 90px); border-width:4px;}
-    #pranchas h1{font-size:22px;}
-    .escolha-prancha{gap:12px;}
-    .escolha-prancha button{width:280px; padding:12px 16px; gap:4px;}
-    .escolha-prancha button strong{font-size:18px;}
-    .escolha-prancha button span{font-size:13px;}
-    #pranchas .dica{font-size:12px;}
-  }
   @media (prefers-reduced-motion:reduce){*{transition:none !important;}}
 </style>
 </head>
@@ -388,7 +343,7 @@
 <div id="canto-config"></div>
 <div id="retorno"></div>
 <div id="aviso"></div>
-<div id="girar">Gire o aparelho para a posição deitada.</div>
+<div id="girar">Gire o tablet para a posição deitada.</div>
 
 <div id="pranchas" class="adulto oculta">
   <nav class="links-site">
@@ -401,7 +356,7 @@
     <button type="button" id="link-config">Configuração</button>
   </nav>
   <div class="dupla">
-    <img id="avatar-pranchas" class="avatar avatar-pequeno" src="avatar-liz.jpg" alt="Ilustração da Liz: menina de pele clara, cabelos castanhos de comprimento médio, levemente ondulados e divididos de lado, óculos de armação rosa com detalhe azul-claro nas hastes, camiseta branca, olhar atento e curioso voltado para cima e para o lado.">
+    <img id="avatar-pranchas" class="avatar avatar-pequeno sem-borda" src="logo-verbaliz.png" alt="Logotipo do VerbaLiz: selo redondo com o avatar da Liz, um desenho em estilo cartoon criado com base nela, de óculos de armação rosa e cabelos castanhos ondulados, o nome VerbaLiz em letra cursiva e as frases Quem não fala também tem o que dizer e O verbo na ponta do dedo.">
     <img id="coleg-pranchas" class="avatar avatar-pequeno coleguinha oculto" alt="Coleguinha">
   </div>
   <h1>Qual prancha?</h1>
@@ -420,18 +375,16 @@
 
 <div id="abertura" class="adulto">
   <div class="abertura-conteudo">
-    <!-- avatar da Liz, publicado com autorização expressa do pai.
+    <!-- o logotipo traz o avatar da Liz, um desenho em estilo cartoon criado com base nela,
+         publicado com autorização expressa do pai. Não é uma foto e não muda com a idade.
          Não coberto pela CC BY-NC-SA: direitos da família, todos reservados (ver LICENSE-CONTEUDO.md).
-         Faz parte da identidade do VerbaLiz e aparece sempre. Ao lado, a foto do coleguinha,
-         escolhida pelo responsável na configuração e guardada só no aparelho. -->
+         Ao lado, a foto ou imagem do coleguinha, escolhida pelo responsável na configuração
+         e guardada só no aparelho. -->
     <div class="dupla">
-      <img id="avatar-abertura" class="avatar" src="avatar-liz.jpg" alt="Ilustração da Liz: menina de pele clara, cabelos castanhos de comprimento médio, levemente ondulados e divididos de lado, óculos de armação rosa com detalhe azul-claro nas hastes, camiseta branca, olhar atento e curioso voltado para cima e para o lado.">
+      <img id="logo-abertura" src="logo-verbaliz.png" alt="Logotipo do VerbaLiz: selo redondo com o avatar da Liz, um desenho em estilo cartoon criado com base nela, de óculos de armação rosa e cabelos castanhos ondulados, o nome VerbaLiz em letra cursiva e as frases Quem não fala também tem o que dizer e O verbo na ponta do dedo.">
       <img id="coleg-abertura" class="avatar coleguinha oculto" alt="Coleguinha">
     </div>
     <div class="abertura-texto">
-      <img id="logo-abertura" src="logo-verbaliz.png" alt="VerbaLiz">
-      <p class="slogan">Quem não fala também tem o que dizer.</p>
-      <p class="apoio">O verbo na ponta do dedo.</p>
       <button id="comecar">Começar</button>
       <p class="dica">Toque do adulto. Liga tela cheia, trava na horizontal e libera o som.
       A configuração fica no menu da próxima tela.</p>
@@ -605,7 +558,7 @@ function itensDaPagina(nome, pagina){
    2. CONFIGURAÇÃO
    ============================================================ */
 
-const VERSAO_APP = "3.5.1";
+const VERSAO_APP = "3.6.1";
 /* Linha de apoio "O verbo na ponta do dedo": rever se o app ganhar acesso
    por acionador ou por olhar, porque deixa de descrever todos os usuarios. */
 
@@ -1654,8 +1607,10 @@ async function renderConfig(){
     + "<p style='margin:0 0 12px'>" + T + "Licença do conteúdo</strong><br>"
     + "Símbolos e vocabulário padrão: Creative Commons CC BY-NC-SA 4.0<br>"
     + "creativecommons.org/licenses/by-nc-sa/4.0</p>"
-    + "<p style='margin:0 0 12px'>" + T + "Imagem da Liz</strong><br>"
-    + "Direitos da família, todos reservados. Uso autorizado só dentro do VerbaLiz.</p>"
+    + "<p style='margin:0 0 12px'>" + T + "Logotipo e ícones</strong><br>"
+    + "Trazem o avatar da Liz, um desenho em estilo cartoon criado com base nela. "
+    + "Direitos da família, todos reservados. "
+    + "Uso autorizado só dentro do VerbaLiz.</p>"
     + "<p style='margin:0 0 12px'>" + T + "Créditos de terceiros</strong><br>"
     + CREDITOS_TERCEIROS + "</p>"
     + "<p style='margin:0 0 12px'>" + T + "Seus dados</strong><br>"
@@ -1779,17 +1734,6 @@ document.addEventListener("visibilitychange", function(){
 /* abertura: o toque do adulto e o gesto que o navegador exige para
    tela cheia, trava de orientacao e liberacao do audio */
 document.getElementById("comecar").addEventListener("click", async function(){
-  /* a voz e a troca de tela vem primeiro, ainda dentro do toque:
-     no iOS, depois de um await o gesto se perde e a fala nao e liberada */
-  try{
-    if(window.speechSynthesis){
-      const u = new SpeechSynthesisUtterance(" ");
-      u.volume = 0; speechSynthesis.speak(u);
-    }
-  }catch(e){}
-  document.getElementById("abertura").classList.add("oculta");
-  document.getElementById("pranchas").classList.remove("oculta");
-  manterTelaAcesa();
   try{
     if(document.documentElement.requestFullscreen && !document.fullscreenElement){
       await document.documentElement.requestFullscreen();
@@ -1798,6 +1742,15 @@ document.getElementById("comecar").addEventListener("click", async function(){
   try{
     if(screen.orientation && screen.orientation.lock) await screen.orientation.lock("landscape");
   }catch(e){}
+  try{
+    if(window.speechSynthesis){
+      const u = new SpeechSynthesisUtterance(" ");
+      u.volume = 0; speechSynthesis.speak(u);
+    }
+  }catch(e){}
+  manterTelaAcesa();
+  document.getElementById("abertura").classList.add("oculta");
+  document.getElementById("pranchas").classList.remove("oculta");
 });
 
 function abrirPrancha(nome){

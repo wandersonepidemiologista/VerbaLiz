@@ -143,9 +143,9 @@ Este é um projeto de **código disponível para uso não comercial**. Não é s
 
 **Não pode.** Vender, incluir em produto pago ou usar como parte de serviço comercial.
 
-### Avatar da Liz
+### Logotipo e ícones
 
-A imagem da página inicial, `public/avatar-liz.jpg`, é exceção às licenças acima: direitos da família da Liz, todos reservados, exibição autorizada apenas dentro do VerbaLiz. No VerbaLiz oficial ela aparece sempre, como parte da identidade do app, e cada família pode colocar ao lado a foto da própria criança, como coleguinha, pela configuração. Quem adaptar o código para outro projeto deve remover ou substituir esse arquivo.
+O logotipo `public/logo-verbaliz.png` traz o avatar da Liz, um desenho em estilo cartoon criado com base nela, e é exceção às licenças acima, junto com os ícones gerados a partir dele: direitos da família da Liz, todos reservados, exibição autorizada apenas dentro do VerbaLiz. Ele aparece sempre na abertura e na escolha de prancha, como parte da identidade do app, e cada família pode colocar ao lado a foto da própria criança, como coleguinha, pela configuração. Quem adaptar o código para outro projeto deve substituir esses arquivos.
 
 ### Símbolos de terceiros
 

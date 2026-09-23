@@ -1,6 +1,6 @@
 /* Service worker: cache versionado.
    Ao publicar uma versao nova, troque VERSAO. */
-const VERSAO = "verbaliz-v23";
+const VERSAO = "verbaliz-v24";
 const ARQUIVOS = [
   "./",
   "./manifest.webmanifest",
@@ -8,7 +8,6 @@ const ARQUIVOS = [
   "./icone-512.png",
   "./icone-maskable-512.png",
   "./logo-verbaliz.png",
-  "./avatar-liz.jpg",
   "./paginas.css",
   "./sobre/",
   "./ajuda/",

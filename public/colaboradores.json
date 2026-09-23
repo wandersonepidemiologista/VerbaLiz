@@ -1,29 +1,4 @@
 {
   "atualizado": "2026-09-22",
-  "colaboradores": [
-    {
-      "nome": "Gabriel",
-      "local": "S\u00e3o Paulo SP",
-      "contribuicoes": ["promotion"],
-      "desde": "2026-09"
-    },
-    {
-      "nome": "Macllene Rodrigues Zeferino",
-      "local": "Alegre, Esp\u00edrito Santo.",
-      "contribuicoes": ["ideas", "promotion"],
-      "desde": "2026-09"
-    },
-    {
-      "nome": "M\u00facio Le\u00e3o Pessoa de Castro",
-      "local": "Belo Horizonte, Minas Gerais",
-      "contribuicoes": ["promotion"],
-      "desde": "2026-09"
-    },
-    {
-      "nome": "Paulo Lopes",
-      "local": "Jo\u00e3o Pessoa -PB",
-      "contribuicoes": ["ideas"],
-      "desde": "2026-09"
-    }
-  ]
+  "colaboradores": []
 }
